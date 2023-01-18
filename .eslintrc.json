@@ -25,7 +25,7 @@
     "tailwindcss/classnames-order": "off",
     "tailwindcss/enforces-negative-arbitrary-values": "off",
 
-    "@typescript-eslint/consistent-type-definitions": "warn",
+    "@typescript-eslint/consistent-type-definitions": ["warn", "type"],
     "@typescript-eslint/consistent-type-imports": "warn",
     "@typescript-eslint/no-unnecessary-boolean-literal-compare": "warn",
     "@typescript-eslint/prefer-for-of": "warn",
