@@ -1,14 +1,13 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import type { InferGetStaticPropsType } from 'next'
 import { type NextPage } from 'next'
+import axios from 'axios'
 
 import type { Pokemon, PokemonSearch, PokemonTypeLink } from '../@types/pokemon'
 
 import { Header } from '../components/common/header'
 import { SearchBox } from '../components/common/pokemonSearch'
 import { BasicCard } from '../components/common/pokemonCards/basic'
-
-import axios from 'axios'
 
 type PokemonLink = {
   name: string
@@ -25,51 +24,39 @@ type PokemonQuery = {
 const Home: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
   pokemons,
   pokemonTypes,
+  pokemonsByType,
 }) => {
-  // const [queryEnabled, setQueryEnabled] = useState(false)
-  // const [currentPokemonId, setCurrentPokemonId] = useState('1')
-  const [pokemonDisplayableList, setPokemonDisplayableList] = useState<
-    typeof pokemons
-  >(pokemons.slice(0, 10))
+  const [pokemonsToShow, setPokemonsToShow] = useState(10)
   const [activeType, setActiveType] = useState('')
+  const [filteredPokemons, setFilteredPokemons] = useState(
+    activeType.length > 0 ? pokemonsByType[activeType] : pokemons,
+  )
 
-  // const { data } = useQuery<Pokemon>({
-  //   queryKey: ['pokemon', currentPokemonId],
-  //   enabled: queryEnabled,
-  //   queryFn: () => {
-  //     return api
-  //       .get<Pokemon>(`pokemon/${currentPokemonId}`)
-  //       .then((response) => {
-  //         console.log(response.data)
+  const hasMorePokemonsToShow = pokemonsToShow < (filteredPokemons?.length ?? 0)
 
-  //         return response.data
-  //       })
-  //   },
-  // })
-
-  const searchPokemon = (pokemon: PokemonSearch) => {
-    //setCurrentPokemonId(pokemon.id.toString())
-    //setQueryEnabled(true)
-    console.log('search ', pokemon)
+  const searchPokemon = (pokemonName: PokemonSearch) => {
+    setActiveType('')
+    setFilteredPokemons(
+      pokemons.filter((pokemon) => pokemon.name.includes(pokemonName.urlName)),
+    )
   }
   const toggleType = (type: string) => {
     if (activeType === type) {
       setActiveType('')
+      setFilteredPokemons(pokemons)
     } else {
       setActiveType(type)
+      setFilteredPokemons(pokemonsByType[type])
     }
   }
-
-  useEffect(() => {
-    if (activeType.length > 0) {
-      const newDisplayList = pokemons.filter((pokemon) => {
-        return pokemon.types.some((type) => activeType === type.name)
-      })
-      setPokemonDisplayableList(newDisplayList.slice(0, 10))
-    } else {
-      setPokemonDisplayableList(pokemons.slice(0, 10))
-    }
-  }, [activeType, pokemons])
+  const loadMorePokemons = () => {
+    setPokemonsToShow((prev) => {
+      if (hasMorePokemonsToShow) {
+        return prev + 10
+      }
+      return prev
+    })
+  }
 
   return (
     <>
@@ -89,9 +76,8 @@ const Home: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
             </button>
           ))}
         </div>
-        {/* {data && <p>{data.name}</p>} */}
         <section className='grid grid-cols-2 gap-3'>
-          {pokemonDisplayableList.map((pokemon) => (
+          {filteredPokemons?.slice(0, pokemonsToShow).map((pokemon) => (
             <BasicCard
               key={pokemon.id}
               name={pokemon.name}
@@ -99,6 +85,9 @@ const Home: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
             />
           ))}
         </section>
+        {hasMorePokemonsToShow && (
+          <button onClick={loadMorePokemons}>Load more...</button>
+        )}
       </main>
     </>
   )
@@ -107,14 +96,13 @@ const Home: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
 export default Home
 
 export const getStaticProps = async () => {
-  // Call an external API endpoint to get posts.
-  // You can use any data fetching library
   const pokemonListRaw = await axios
-    .get<PokemonQuery>('https://pokeapi.co/api/v2/pokemon/?offset=0&limit=20')
+    .get<PokemonQuery>('https://pokeapi.co/api/v2/pokemon/?offset=0&limit=79')
     .then((response) => {
       return response.data.results
     })
 
+  //TODO optimize data removing repeated link contents
   const allPokemonTypes: PokemonTypeLink[] = []
   const getAllPokemonData = async (pokemon: PokemonLink) => {
     const pokemonData = await axios
@@ -150,10 +138,27 @@ export const getStaticProps = async () => {
     }
   })
 
+  type PokemonByType = {
+    [k: string]: Pick<(typeof pokemonsData)[0], 'id' | 'name' | 'image'>[]
+  }
+  const pokemonsByType: PokemonByType = {}
+
+  uniquePokemonTypes.forEach((uniqueType) => {
+    const currentPokemonsByType = pokemonsData.filter((pokemon) =>
+      pokemon.types.some((type) => type.name === uniqueType.name),
+    )
+    pokemonsByType[uniqueType.name] = currentPokemonsByType.map(
+      ({ id, name, image }) => {
+        return { id, name, image }
+      },
+    )
+  })
+
   return {
     props: {
       pokemons: pokemonsData,
       pokemonTypes: uniquePokemonTypes,
+      pokemonsByType,
     },
     revalidate: 60 * 60 * 24 * 30, // 30 days
   }
