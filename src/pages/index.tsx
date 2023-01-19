@@ -31,7 +31,7 @@ const Home: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
   const [pokemonDisplayableList, setPokemonDisplayableList] = useState<
     typeof pokemons
   >(pokemons.slice(0, 10))
-  const [activeTypes, setActiveTypes] = useState<string[]>([])
+  const [activeType, setActiveType] = useState('')
 
   // const { data } = useQuery<Pokemon>({
   //   queryKey: ['pokemon', currentPokemonId],
@@ -53,23 +53,23 @@ const Home: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
     console.log('search ', pokemon)
   }
   const toggleType = (type: string) => {
-    if (!activeTypes.includes(type)) {
-      setActiveTypes((prev) => [...prev, type])
+    if (activeType === type) {
+      setActiveType('')
     } else {
-      setActiveTypes((prev) => prev.filter((prevType) => prevType != type))
+      setActiveType(type)
     }
   }
 
   useEffect(() => {
-    if (activeTypes.length > 0) {
+    if (activeType.length > 0) {
       const newDisplayList = pokemons.filter((pokemon) => {
-        return pokemon.types.some((type) => activeTypes.includes(type.name))
+        return pokemon.types.some((type) => activeType === type.name)
       })
       setPokemonDisplayableList(newDisplayList.slice(0, 10))
     } else {
       setPokemonDisplayableList(pokemons.slice(0, 10))
     }
-  }, [activeTypes, pokemons])
+  }, [activeType, pokemons])
 
   return (
     <>
@@ -82,7 +82,7 @@ const Home: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
               key={type.name}
               onClick={() => toggleType(type.name)}
               className={`rounded border p-2 ${
-                activeTypes.includes(type.name) ? 'bg-teal-500' : ''
+                activeType.includes(type.name) ? 'bg-teal-500' : ''
               }`}
             >
               {type.name}
