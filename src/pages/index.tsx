@@ -8,6 +8,7 @@ import type { Pokemon, PokemonSearch, PokemonTypeLink } from '../@types/pokemon'
 import { Header } from '../components/common/header'
 import { SearchBox } from '../components/common/pokemonSearch'
 import { BasicCard } from '../components/common/pokemonCards/basic'
+import { Modal } from '../components/common/modal'
 
 type PokemonLink = {
   name: string
@@ -26,6 +27,8 @@ const Home: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
   pokemonTypes,
   pokemonsByType,
 }) => {
+  const [isModalOpen, setIsModalOpen] = useState(false)
+  const [currentPokemon, setCurrentPokemon] = useState<(typeof pokemons)[0]>()
   const [pokemonsToShow, setPokemonsToShow] = useState(10)
   const [activeType, setActiveType] = useState('')
   const [filteredPokemons, setFilteredPokemons] = useState(
@@ -58,9 +61,30 @@ const Home: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
     })
   }
 
+  const openPokemonDetail = (pokemonId: number) => {
+    setIsModalOpen(true)
+    setCurrentPokemon(pokemons.find((poke) => poke.id === pokemonId))
+  }
+
   return (
     <>
       <Header />
+      <Modal
+        setIsOpen={setIsModalOpen}
+        isOpen={isModalOpen}
+        title={currentPokemon?.name.replaceAll('-', ' ') ?? ''}
+      >
+        <div className='relative flex gap-2'>
+          <p className='text-sm text-gray-500'>{currentPokemon?.name}</p>
+        </div>
+        <button
+          type='button'
+          className='absolute right-0 top-0 inline-flex -translate-x-2/3 translate-y-1/3 items-center justify-center rounded-full px-1 text-sm font-bold text-red-500 transition-all hover:bg-gray-300 focus:outline-none focus-visible:ring-1 focus-visible:ring-gray-500'
+          onClick={() => setIsModalOpen(false)}
+        >
+          X
+        </button>
+      </Modal>
       <main className='flex grow flex-col items-center gap-10 px-4 pb-10'>
         <SearchBox onSearch={searchPokemon} />
         <div className='grid grid-flow-row grid-cols-5 gap-2 text-xs'>
@@ -82,6 +106,7 @@ const Home: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
               key={pokemon.id}
               name={pokemon.name}
               image={pokemon.image}
+              onClick={() => openPokemonDetail(pokemon.id)}
             />
           ))}
         </section>
@@ -153,6 +178,7 @@ export const getStaticProps = async () => {
       },
     )
   })
+  uniquePokemonTypes.sort((a, b) => (a.name < b.name ? -1 : 1))
 
   return {
     props: {
