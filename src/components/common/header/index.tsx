@@ -7,14 +7,14 @@ export const Header = () => {
     <header className='flex items-center justify-center gap-4 py-6 text-xl'>
       <Link
         href='/'
-        className='flex items-center gap-1 border-2 border-gray-500 p-1 transition-all hover:underline hover:brightness-125'
+        className='flex items-center gap-1 border-2 border-gray-700 p-1 transition-all hover:underline hover:brightness-125'
       >
         <TbListSearch />
         Home
       </Link>
       <Link
         href='/pokedex'
-        className='relative flex items-center gap-1 border-2 border-gray-500 p-1 transition-all hover:underline hover:brightness-125'
+        className='relative flex items-center gap-1 border-2 border-gray-700 p-1 transition-all hover:underline hover:brightness-125'
       >
         <MdCatchingPokemon />
         Pokédex

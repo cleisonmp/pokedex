@@ -15,7 +15,7 @@ export type Pokemon = {
   species: Species
   sprites: Sprites
   stats: Stat[]
-  types: Type[]
+  types: PokemonType[]
   weight: number
 }
 
@@ -39,9 +39,13 @@ export type Stat = {
   }
 }
 
-export type Type = {
+export type PokemonType = {
   slot: number
-  type: { name: string; url: string }
+  type: PokemonTypeLink
+}
+export type PokemonTypeLink = {
+  name: string
+  url: string
 }
 
 export type Species = {
