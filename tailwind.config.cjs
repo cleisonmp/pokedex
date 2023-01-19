@@ -12,7 +12,7 @@ module.exports = {
       },
       fontFamily: {
         sans: [
-          'Roboto',
+          'Inter',
           'ui-sans-serif',
           'system-ui',
           '-apple-system',
@@ -39,6 +39,7 @@ module.exports = {
           '"Courier New"',
           'monospace',
         ],
+        start: ['"Press Start 2P"', 'cursive'],
       },
       opacity: {
         85: '.85',

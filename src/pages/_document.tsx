@@ -5,13 +5,13 @@ export default function Document() {
     <Html>
       <Head>
         <link
-          href='https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;700&family=Roboto:wght@300;400;500;700;900&family=Sriracha&display=swap'
+          href='https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700;800&family=Press+Start+2P&display=swap'
           rel='stylesheet'
         />
 
         <link rel='shortcut icon' href='/favicon.ico' type='image/ico' />
       </Head>
-      <body className='bg-gray-700 text-gray-50'>
+      <body className='bg-gray-400 text-gray-50'>
         <Main />
         <NextScript />
       </body>
