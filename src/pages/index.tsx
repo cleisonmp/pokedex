@@ -113,7 +113,12 @@ const Home: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
           ))}
         </section>
         {hasMorePokemonsToShow && (
-          <button onClick={loadMorePokemons}>Load more...</button>
+          <button
+            className='flex select-none items-center justify-center rounded-lg bg-slate-200 py-2 px-4 font-bold text-gray-800 hover:bg-slate-300'
+            onClick={loadMorePokemons}
+          >
+            Load more...
+          </button>
         )}
       </main>
     </>
