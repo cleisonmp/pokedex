@@ -1,15 +1,18 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import type { InferGetStaticPropsType } from 'next'
 import { type NextPage } from 'next'
 import axios from 'axios'
 
-import type { Pokemon, PokemonSearch, PokemonTypeLink } from '../@types/pokemon'
+import type {
+  DetailedPokemon,
+  Pokemon,
+  PokemonSearch,
+  PokemonTypeLink,
+} from '../@types/pokemon'
 
 import { Header } from '../components/common/header'
 import { SearchBox } from '../components/common/pokemonSearch'
-import { BasicCard } from '../components/common/pokemonCards/basic'
-import { Modal } from '../components/common/modal'
-import { DetailCard } from '../components/common/pokemonCards/detailed'
+import { PokemonList } from '../components/common/pokemonList'
 
 type PokemonLink = {
   name: string
@@ -23,20 +26,30 @@ type PokemonQuery = {
   results: PokemonLink[]
 }
 
+type PokemonByType = {
+  [k: string]: DetailedPokemon[]
+}
+
 const Home: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
   pokemons,
   pokemonTypes,
-  pokemonsByType,
 }) => {
-  const [isModalOpen, setIsModalOpen] = useState(false)
-  const [currentPokemon, setCurrentPokemon] = useState<(typeof pokemons)[0]>()
-  const [pokemonsToShow, setPokemonsToShow] = useState(10)
   const [activeType, setActiveType] = useState('')
-  const [filteredPokemons, setFilteredPokemons] = useState(
-    activeType.length > 0 ? pokemonsByType[activeType] : pokemons,
-  )
+  const [filteredPokemons, setFilteredPokemons] = useState(pokemons)
 
-  const hasMorePokemonsToShow = pokemonsToShow < (filteredPokemons?.length ?? 0)
+  //groupPokemons and memoize
+  const pokemonsByType = useMemo(() => {
+    const pokemonsByType: PokemonByType = {}
+
+    pokemonTypes.forEach((uniqueType) => {
+      const currentPokemonsByType = pokemons.filter((pokemon) =>
+        pokemon.types.some((type) => type.name === uniqueType.name),
+      )
+      pokemonsByType[uniqueType.name] = currentPokemonsByType
+    })
+
+    return pokemonsByType
+  }, [pokemonTypes, pokemons])
 
   const searchPokemon = (pokemonName: PokemonSearch) => {
     setActiveType('')
@@ -44,49 +57,23 @@ const Home: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
       pokemons.filter((pokemon) => pokemon.name.includes(pokemonName.urlName)),
     )
   }
-  const toggleType = (type: string) => {
-    if (activeType === type) {
+  const toggleType = (filterTypeName: string) => {
+    if (activeType === filterTypeName) {
       setActiveType('')
       setFilteredPokemons(pokemons)
     } else {
-      setActiveType(type)
-      setFilteredPokemons(pokemonsByType[type])
-    }
-  }
-  const loadMorePokemons = () => {
-    setPokemonsToShow((prev) => {
-      if (hasMorePokemonsToShow) {
-        return prev + 10
-      }
-      return prev
-    })
-  }
+      const newFilteredPokemons = pokemonsByType[filterTypeName]
 
-  const openPokemonDetail = (pokemonId: number) => {
-    setIsModalOpen(true)
-    setCurrentPokemon(pokemons.find((poke) => poke.id === pokemonId))
+      if (newFilteredPokemons) {
+        setActiveType(filterTypeName)
+        setFilteredPokemons(newFilteredPokemons)
+      }
+    }
   }
 
   return (
     <>
       <Header />
-      <Modal
-        setIsOpen={setIsModalOpen}
-        isOpen={isModalOpen}
-        //title={currentPokemon?.name.replaceAll('-', ' ') ?? ''}
-        title=''
-      >
-        <div className='flex items-center justify-center'>
-          {currentPokemon && <DetailCard pokemon={currentPokemon} />}
-        </div>
-        <button
-          type='button'
-          className='absolute right-0 top-0 inline-flex -translate-x-2/3 translate-y-1/3 items-center justify-center rounded-full px-1 text-sm font-bold text-red-500 transition-all hover:bg-gray-300 focus:outline-none focus-visible:ring-1 focus-visible:ring-gray-500'
-          onClick={() => setIsModalOpen(false)}
-        >
-          X
-        </button>
-      </Modal>
       <main className='flex grow flex-col items-center gap-10 px-4 pb-10'>
         <SearchBox onSearch={searchPokemon} />
         <div className='grid grid-flow-row grid-cols-5 gap-2 text-xs'>
@@ -102,24 +89,7 @@ const Home: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
             </button>
           ))}
         </div>
-        <section className='grid grid-cols-2 gap-3'>
-          {filteredPokemons?.slice(0, pokemonsToShow).map((pokemon) => (
-            <BasicCard
-              key={pokemon.id}
-              name={pokemon.name}
-              image={pokemon.image}
-              onClick={() => openPokemonDetail(pokemon.id)}
-            />
-          ))}
-        </section>
-        {hasMorePokemonsToShow && (
-          <button
-            className='flex select-none items-center justify-center rounded-lg bg-slate-200 py-2 px-4 font-bold text-gray-800 hover:bg-slate-300'
-            onClick={loadMorePokemons}
-          >
-            Load more...
-          </button>
-        )}
+        <PokemonList pokemons={filteredPokemons} />
       </main>
     </>
   )
@@ -159,7 +129,9 @@ export const getStaticProps = async () => {
     }
   }
   const pokemonDataPromisses = pokemonListRaw.map(getAllPokemonData)
-  const pokemonsData = await Promise.all(pokemonDataPromisses)
+  const pokemonsData: DetailedPokemon[] = await Promise.all(
+    pokemonDataPromisses,
+  )
   const uniquePokemonTypes: PokemonTypeLink[] = []
 
   allPokemonTypes.forEach((type) => {
@@ -172,28 +144,12 @@ export const getStaticProps = async () => {
     }
   })
 
-  type PokemonByType = {
-    [k: string]: Pick<(typeof pokemonsData)[0], 'id' | 'name' | 'image'>[]
-  }
-  const pokemonsByType: PokemonByType = {}
-
-  uniquePokemonTypes.forEach((uniqueType) => {
-    const currentPokemonsByType = pokemonsData.filter((pokemon) =>
-      pokemon.types.some((type) => type.name === uniqueType.name),
-    )
-    pokemonsByType[uniqueType.name] = currentPokemonsByType.map(
-      ({ id, name, image }) => {
-        return { id, name, image }
-      },
-    )
-  })
   uniquePokemonTypes.sort((a, b) => (a.name < b.name ? -1 : 1))
 
   return {
     props: {
       pokemons: pokemonsData,
       pokemonTypes: uniquePokemonTypes,
-      pokemonsByType,
     },
     revalidate: 60 * 60 * 24 * 30, // 30 days
   }
