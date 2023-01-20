@@ -1,26 +1,24 @@
+import { useState } from 'react'
+
 import Image from 'next/image'
-import { MdShield } from 'react-icons/md'
+import { MdCatchingPokemon, MdShield } from 'react-icons/md'
 import { BiTrendingDown } from 'react-icons/bi'
+import { Transition } from '@headlessui/react'
+import type { ToastOptions } from 'react-toastify'
+import { toast } from 'react-toastify'
+
+import { usePokedexStore } from '../../../../stores/pokedex'
 
 import type { DetailedPokemon } from '../../../../@types/pokemon'
 import { toTitleCase } from '../../../../lib/utils/toTitleCase'
 import { StatContainer } from '../../pokemonStats/statContainer'
 import { StatToggleButton } from '../../pokemonStats/statToggleButton'
-import { useState } from 'react'
+import { Pokeball } from '../../pokeball/pokeball'
 
 type DetailCardProps = {
   pokemon: DetailedPokemon
 }
 export const DetailCard = ({ pokemon }: DetailCardProps) => {
-  const [typeActive, setTypeActive] = useState(true)
-  const [speciesActive, setSpeciesActive] = useState(true)
-  const [baseActive, setBaseActive] = useState(true)
-  const [combatActive, setCombatActive] = useState(true)
-  const [specialActive, setSpecialActive] = useState(true)
-  const [weaknessesActive, setWeaknessesActive] = useState(true)
-  const [resistancesActive, setResistancesActive] = useState(true)
-  const [catchActive, setCatchActive] = useState(true)
-
   const {
     id,
     image,
@@ -33,11 +31,23 @@ export const DetailCard = ({ pokemon }: DetailCardProps) => {
     weight,
     height,
   } = pokemon
-  const hasMoreThanOneType = types.length > 1
 
-  //console.log(image)
-  //console.log(imageHq)
-  //console.log(stats)
+  const [typeActive, setTypeActive] = useState(true)
+  const [speciesActive, setSpeciesActive] = useState(true)
+  const [baseActive, setBaseActive] = useState(true)
+  const [combatActive, setCombatActive] = useState(true)
+  const [specialActive, setSpecialActive] = useState(true)
+  const [weaknessesActive, setWeaknessesActive] = useState(true)
+  const [resistancesActive, setResistancesActive] = useState(true)
+  const [catchActive, setCatchActive] = useState(true)
+
+  const pokedex = usePokedexStore()
+  const [showPokeball, setShowPokeball] = useState(false)
+
+  const isCatched = !!pokedex.pokemons.find(
+    (pokedexPokemon) => pokedexPokemon.id === id,
+  )
+  const hasMoreThanOneType = types.length > 1
 
   const speed = stats.find((stat) => stat.stat.name === 'speed')?.base_stat ?? 0
   const defense =
@@ -45,11 +55,45 @@ export const DetailCard = ({ pokemon }: DetailCardProps) => {
   const attack =
     stats.find((stat) => stat.stat.name === 'attack')?.base_stat ?? 0
   const hp = stats.find((stat) => stat.stat.name === 'hp')?.base_stat ?? 0
-  const baseDifficultyLevel =
-    (speed * 2 + defense * 1.5 + attack * 1.25 + hp * 0.75) / 500 - 0.1
-  const difficultyLevelDisplayBar =
-    baseDifficultyLevel > 1 ? 0 : 100 - baseDifficultyLevel * 100
 
+  const calculatedDifficultyLevel =
+    (speed * 2 + defense * 1.5 + attack * 1.25 + hp * 0.75) / 500 - 0.1
+  const normalizedDifficultyLevel =
+    calculatedDifficultyLevel > 0.95 ? 0.95 : calculatedDifficultyLevel
+  const difficultyLevelDisplayBar = 100 - normalizedDifficultyLevel * 100
+
+  const handleCatchingPokemon = () => {
+    setShowPokeball(true)
+
+    setTimeout(() => {
+      const randomNumber = Math.random()
+      const catchedPokemon = randomNumber >= normalizedDifficultyLevel
+
+      const toastProps: ToastOptions = {
+        position: 'bottom-center',
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: 'light',
+      }
+
+      toast.dismiss() //clear prev toasts to avoid stacking
+      if (catchedPokemon) {
+        pokedex.add(pokemon)
+        toast.success('🎯 Nice catch!', toastProps)
+      } else {
+        toast.error(
+          '🕸 Better bring a net next time. This one escaped.',
+          toastProps,
+        )
+      }
+
+      setShowPokeball(false)
+    }, 1000)
+  }
   return (
     <div className='flex gap-4 text-gray-800'>
       <div className='flex w-56 flex-col items-center justify-center rounded-lg border-8 border-gray-600 bg-gray-50 text-xl lg:w-64'>
@@ -232,6 +276,30 @@ export const DetailCard = ({ pokemon }: DetailCardProps) => {
             text='Catch difficulty'
           />
         </div>
+        <button
+          onClick={handleCatchingPokemon}
+          disabled={showPokeball || isCatched}
+          className='group flex w-full select-none items-center justify-center gap-1 rounded-lg bg-slate-200 p-2 font-bold hover:bg-slate-300 disabled:pointer-events-none disabled:opacity-50'
+        >
+          <MdCatchingPokemon
+            className='transition-all group-hover:scale-125 group-hover:fill-red-500'
+            size={20}
+          />
+          Try to catch
+        </button>
+        <Transition
+          show={showPokeball}
+          enter='transform transition duration-300 ease-in-out'
+          leave='transform transition duration-300 ease-in-out'
+          enterFrom='opacity-0 scale-50'
+          enterTo='opacity-100 scale-100'
+          leaveFrom='opacity-100 scale-100 '
+          leaveTo='opacity-0 scale-50'
+        >
+          <div className='flex w-full origin-center animate-spin items-center justify-center py-5'>
+            <Pokeball />
+          </div>
+        </Transition>
       </div>
     </div>
   )
