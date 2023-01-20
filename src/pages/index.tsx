@@ -9,6 +9,7 @@ import { Header } from '../components/common/header'
 import { SearchBox } from '../components/common/pokemonSearch'
 import { BasicCard } from '../components/common/pokemonCards/basic'
 import { Modal } from '../components/common/modal'
+import { DetailCard } from '../components/common/pokemonCards/detailed'
 
 type PokemonLink = {
   name: string
@@ -72,10 +73,23 @@ const Home: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
       <Modal
         setIsOpen={setIsModalOpen}
         isOpen={isModalOpen}
-        title={currentPokemon?.name.replaceAll('-', ' ') ?? ''}
+        //title={currentPokemon?.name.replaceAll('-', ' ') ?? ''}
+        title=''
       >
-        <div className='relative flex gap-2'>
-          <p className='text-sm text-gray-500'>{currentPokemon?.name}</p>
+        <div className='flex items-center justify-between'>
+          {currentPokemon && <DetailCard pokemon={currentPokemon} />}
+          {/* <div className='grid grid-flow-row grid-cols-5 gap-2 text-xs text-gray-800'>
+            <button>stat toggle</button>
+            <button>stat toggle</button>
+            <button>stat toggle</button>
+            <button>stat toggle</button>
+            <button>stat toggle</button>
+            <button>stat toggle</button>
+            <button>stat toggle</button>
+            <button>stat toggle</button>
+            <button>stat toggle</button>
+            <button>stat toggle</button>
+          </div> */}
         </div>
         <button
           type='button'
@@ -144,9 +158,11 @@ export const getStaticProps = async () => {
       name: pokemonData.name,
       species: pokemonData.species,
       image: pokemonData.sprites.front_default,
+      imageHq: pokemonData.sprites.other['official-artwork'].front_default,
       stats: pokemonData.stats,
       types: pokemonData.types.map((types) => types.type),
       weight: pokemonData.weight,
+      height: pokemonData.height,
     }
   }
   const pokemonDataPromisses = pokemonListRaw.map(getAllPokemonData)

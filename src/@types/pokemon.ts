@@ -28,6 +28,11 @@ export type Ability = {
 export type Sprites = {
   back_default: string
   front_default: string
+  other: {
+    'official-artwork': {
+      front_default: string | null
+    }
+  }
 }
 
 export type Stat = {
