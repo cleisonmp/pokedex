@@ -17,8 +17,12 @@ import { Pokeball } from '../../pokeball/pokeball'
 
 type DetailCardProps = {
   pokemon: DetailedPokemon
+  allowCatching?: boolean
 }
-export const DetailCard = ({ pokemon }: DetailCardProps) => {
+export const DetailCard = ({
+  pokemon,
+  allowCatching = true,
+}: DetailCardProps) => {
   const {
     id,
     image,
@@ -276,17 +280,20 @@ export const DetailCard = ({ pokemon }: DetailCardProps) => {
             text='Catch difficulty'
           />
         </div>
-        <button
-          onClick={handleCatchingPokemon}
-          disabled={showPokeball || isCatched}
-          className='group flex w-full select-none items-center justify-center gap-1 rounded-lg bg-slate-200 p-2 font-bold hover:bg-slate-300 disabled:pointer-events-none disabled:opacity-50'
-        >
-          <MdCatchingPokemon
-            className='transition-all group-hover:scale-125 group-hover:fill-red-500'
-            size={20}
-          />
-          Try to catch
-        </button>
+        {allowCatching && (
+          <button
+            onClick={handleCatchingPokemon}
+            disabled={showPokeball || isCatched}
+            className='group flex w-full select-none items-center justify-center gap-1 rounded-lg bg-slate-200 p-2 font-bold   enabled:hover:bg-slate-300 disabled:cursor-not-allowed disabled:opacity-50'
+          >
+            <MdCatchingPokemon
+              className='transition-all group-enabled:group-hover:scale-125 group-enabled:group-hover:fill-red-500'
+              size={20}
+            />
+            Try to catch
+          </button>
+        )}
+
         <Transition
           show={showPokeball}
           enter='transform transition duration-300 ease-in-out'

@@ -5,10 +5,14 @@ import { BasicCard } from '../pokemonCards/basic'
 import { DetailCard } from '../pokemonCards/detailed'
 
 type PokemonListProps = {
+  allowCatching?: boolean
   pokemons: DetailedPokemon[]
 }
 
-export const PokemonList = ({ pokemons }: PokemonListProps) => {
+export const PokemonList = ({
+  allowCatching = true,
+  pokemons,
+}: PokemonListProps) => {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [currentPokemon, setCurrentPokemon] = useState<DetailedPokemon>()
 
@@ -33,7 +37,12 @@ export const PokemonList = ({ pokemons }: PokemonListProps) => {
     <>
       <Modal setIsOpen={setIsModalOpen} isOpen={isModalOpen} title=''>
         <div className='flex items-center justify-center'>
-          {currentPokemon && <DetailCard pokemon={currentPokemon} />}
+          {currentPokemon && (
+            <DetailCard
+              pokemon={currentPokemon}
+              allowCatching={allowCatching}
+            />
+          )}
         </div>
         <button
           type='button'
