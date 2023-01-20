@@ -76,20 +76,8 @@ const Home: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
         //title={currentPokemon?.name.replaceAll('-', ' ') ?? ''}
         title=''
       >
-        <div className='flex items-center justify-between'>
+        <div className='flex items-center justify-center'>
           {currentPokemon && <DetailCard pokemon={currentPokemon} />}
-          {/* <div className='grid grid-flow-row grid-cols-5 gap-2 text-xs text-gray-800'>
-            <button>stat toggle</button>
-            <button>stat toggle</button>
-            <button>stat toggle</button>
-            <button>stat toggle</button>
-            <button>stat toggle</button>
-            <button>stat toggle</button>
-            <button>stat toggle</button>
-            <button>stat toggle</button>
-            <button>stat toggle</button>
-            <button>stat toggle</button>
-          </div> */}
         </div>
         <button
           type='button'
