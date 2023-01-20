@@ -76,3 +76,10 @@ export type EvolvesTo = {
   evolves_to: EvolvesTo[]
   species: Species
 }
+
+export type DetailedPokemon = {
+  url: string
+  image: string
+  imageHq: string | null
+  types: PokemonTypeLink[]
+} & Pick<Pokemon, 'id' | 'name' | 'species' | 'stats' | 'weight' | 'height'>

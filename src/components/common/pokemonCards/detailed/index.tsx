@@ -2,18 +2,11 @@ import Image from 'next/image'
 import { MdShield } from 'react-icons/md'
 import { BiTrendingDown } from 'react-icons/bi'
 
-import type { Pokemon, PokemonTypeLink } from '../../../../@types/pokemon'
+import type { DetailedPokemon } from '../../../../@types/pokemon'
 import { toTitleCase } from '../../../../lib/utils/toTitleCase'
 import { StatContainer } from '../../pokemonStats/statContainer'
 import { StatToggleButton } from '../../pokemonStats/statToggleButton'
 import { useState } from 'react'
-
-type DetailedPokemon = {
-  url: string
-  image: string
-  imageHq: string | null
-  types: PokemonTypeLink[]
-} & Pick<Pokemon, 'id' | 'name' | 'species' | 'stats' | 'weight' | 'height'>
 
 type DetailCardProps = {
   pokemon: DetailedPokemon
