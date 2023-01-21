@@ -3,15 +3,18 @@ import type { DetailedPokemon } from '../../../@types/pokemon'
 import { Modal } from '../modal'
 import { BasicCard } from '../pokemonCards/basic'
 import { DetailCard } from '../pokemonCards/detailed'
+import { PokedexCard } from '../pokemonCards/pokedex'
 
 type PokemonListProps = {
   allowCatching?: boolean
   pokemons: DetailedPokemon[]
+  pokedexMode?: boolean
 }
 
 export const PokemonList = ({
   allowCatching = true,
   pokemons,
+  pokedexMode = false,
 }: PokemonListProps) => {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [currentPokemon, setCurrentPokemon] = useState<DetailedPokemon>()
@@ -54,14 +57,28 @@ export const PokemonList = ({
       </Modal>
 
       <section className='grid grid-cols-2 gap-3'>
-        {pokemons.slice(0, pokemonsToShow).map((pokemon) => (
-          <BasicCard
-            key={pokemon.id}
-            name={pokemon.name}
-            image={pokemon.image}
-            onClick={() => openPokemonDetail(pokemon.id)}
-          />
-        ))}
+        {pokedexMode
+          ? pokemons
+              .slice(0, pokemonsToShow)
+              .map((pokemon) => (
+                <PokedexCard
+                  key={pokemon.id}
+                  id={pokemon.id}
+                  name={pokemon.name}
+                  image={pokemon.image}
+                  onClick={() => openPokemonDetail(pokemon.id)}
+                />
+              ))
+          : pokemons
+              .slice(0, pokemonsToShow)
+              .map((pokemon) => (
+                <BasicCard
+                  key={pokemon.id}
+                  name={pokemon.name}
+                  image={pokemon.image}
+                  onClick={() => openPokemonDetail(pokemon.id)}
+                />
+              ))}
       </section>
       {hasMorePokemonsToShow && (
         <button
