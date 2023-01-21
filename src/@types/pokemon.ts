@@ -25,6 +25,18 @@ export type Ability = {
   slot: number
 }
 
+export type AbilityDetail = {
+  effect_entries: AbilityEffects[]
+  id: number
+  name: string
+}
+
+export type AbilityEffects = {
+  effect: string
+  language: { name: string; url: string }
+  short_effect: string
+}
+
 export type Sprites = {
   back_default: string
   front_default: string
@@ -82,4 +94,7 @@ export type DetailedPokemon = {
   image: string
   imageHq: string | null
   types: PokemonTypeLink[]
-} & Pick<Pokemon, 'id' | 'name' | 'species' | 'stats' | 'weight' | 'height'>
+} & Pick<
+  Pokemon,
+  'id' | 'name' | 'abilities' | 'species' | 'stats' | 'weight' | 'height'
+>

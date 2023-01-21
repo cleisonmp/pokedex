@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import type { InferGetStaticPropsType } from 'next'
 import { type NextPage } from 'next'
 import axios from 'axios'
@@ -13,6 +13,8 @@ import type {
 import { Header } from '../components/common/header'
 import { SearchBox } from '../components/common/pokemonSearch'
 import { PokemonList } from '../components/common/pokemonList'
+import { useAtom } from 'jotai'
+import { pokemonListState } from '../lib/atoms/pokemonList'
 
 type PokemonLink = {
   name: string
@@ -34,6 +36,7 @@ const Home: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
   pokemons,
   pokemonTypes,
 }) => {
+  const [, setPokemonList] = useAtom(pokemonListState)
   const [activeType, setActiveType] = useState('')
   const [filteredPokemons, setFilteredPokemons] = useState(pokemons)
 
@@ -70,6 +73,11 @@ const Home: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
       }
     }
   }
+
+  useEffect(() => {
+    setPokemonList(pokemons)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   return (
     <>
@@ -119,6 +127,7 @@ export const getStaticProps = async () => {
       url: pokemon.url,
       id: pokemonData.id,
       name: pokemonData.name,
+      abilities: pokemonData.abilities,
       species: pokemonData.species,
       image: pokemonData.sprites.front_default,
       imageHq: pokemonData.sprites.other['official-artwork'].front_default,

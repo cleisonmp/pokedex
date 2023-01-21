@@ -1,5 +1,5 @@
 import { create } from 'zustand'
-import type { DetailedPokemon } from '../@types/pokemon'
+import type { DetailedPokemon } from '../../@types/pokemon'
 
 type PokedexState = {
   pokemons: DetailedPokemon[]

@@ -1,5 +1,5 @@
 import type { MouseEventHandler } from 'react'
-import { usePokedexStore } from '../../../../stores/pokedex'
+import { usePokedexStore } from '../../../../lib/stores/pokedex'
 import { BasicCard } from '../basic'
 
 type PokedexCardProps = {

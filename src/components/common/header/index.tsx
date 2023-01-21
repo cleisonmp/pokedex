@@ -1,7 +1,7 @@
 import Link from 'next/link'
 import { MdCatchingPokemon } from 'react-icons/md'
 import { TbListSearch } from 'react-icons/tb'
-import { usePokedexStore } from '../../../stores/pokedex'
+import { usePokedexStore } from '../../../lib/stores/pokedex'
 
 export const Header = () => {
   const totalPokemonsCatched = usePokedexStore((state) => state.pokemons.length)

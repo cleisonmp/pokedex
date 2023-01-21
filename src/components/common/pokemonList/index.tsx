@@ -1,11 +1,5 @@
-import { useQuery } from '@tanstack/react-query'
-import axios from 'axios'
 import { useState } from 'react'
-import type {
-  DetailedPokemon,
-  EvolutionChain,
-  SpeciesDetail,
-} from '../../../@types/pokemon'
+import type { DetailedPokemon } from '../../../@types/pokemon'
 import { Modal } from '../modal'
 import { BasicCard } from '../pokemonCards/basic'
 import { DetailCard } from '../pokemonCards/detailed'
@@ -24,46 +18,6 @@ export const PokemonList = ({
 }: PokemonListProps) => {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [currentPokemon, setCurrentPokemon] = useState<DetailedPokemon>()
-
-  const { data: currentPokemonEvolutions } = useQuery({
-    queryKey: ['pokemon', 'evolutions', currentPokemon?.id],
-    queryFn: async () => {
-      if (currentPokemon?.species.url) {
-        return await axios
-          .get<SpeciesDetail>(currentPokemon?.species.url)
-          .then(async (response) => {
-            return await axios
-              .get<EvolutionChain>(response.data.evolution_chain.url)
-              .then((chainResponse) => {
-                const basePokemon = pokemons.find(
-                  (poke) => poke.name === chainResponse.data.chain.species.name,
-                )
-
-                const firstEvolution = pokemons.find(
-                  (poke) =>
-                    poke.name ===
-                    chainResponse.data.chain.evolves_to[0]?.species.name,
-                )
-
-                const secondEvolution = pokemons.find(
-                  (poke) =>
-                    poke.name ===
-                    chainResponse.data.chain.evolves_to[0]?.evolves_to[0]
-                      ?.species.name,
-                )
-
-                const evolutionsResponse: DetailedPokemon[] = []
-                basePokemon && evolutionsResponse.push(basePokemon)
-                firstEvolution && evolutionsResponse.push(firstEvolution)
-                secondEvolution && evolutionsResponse.push(secondEvolution)
-
-                return evolutionsResponse
-              })
-          })
-      }
-      return null
-    },
-  })
 
   const [pokemonsToShow, setPokemonsToShow] = useState(10)
   const hasMorePokemonsToShow = pokemonsToShow < (pokemons?.length ?? 0)
@@ -87,19 +41,10 @@ export const PokemonList = ({
       <Modal setIsOpen={setIsModalOpen} isOpen={isModalOpen} title=''>
         <div className='flex items-center justify-center'>
           {currentPokemon && (
-            <div className='flex flex-col gap-2'>
-              <DetailCard
-                pokemon={currentPokemon}
-                allowCatching={allowCatching}
-              />
-              {currentPokemonEvolutions ? (
-                <PokemonList pokemons={currentPokemonEvolutions} />
-              ) : (
-                <p className='text-lg font-bold text-gray-800'>
-                  Loading evolutions...
-                </p>
-              )}
-            </div>
+            <DetailCard
+              pokemon={currentPokemon}
+              allowCatching={allowCatching}
+            />
           )}
         </div>
         <button

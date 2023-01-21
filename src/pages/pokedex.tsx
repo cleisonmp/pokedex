@@ -1,6 +1,6 @@
 import { type NextPage } from 'next'
 
-import { usePokedexStore } from '../stores/pokedex'
+import { usePokedexStore } from '../lib/stores/pokedex'
 
 import { Header } from '../components/common/header'
 import { PokemonList } from '../components/common/pokemonList'
