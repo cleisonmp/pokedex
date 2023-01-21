@@ -49,7 +49,7 @@ export const DetailCard = ({
   } = pokemon
 
   const [typeActive, setTypeActive] = useState(true)
-  const [speciesActive, setSpeciesActive] = useState(true)
+  const [categoryActive, setCategoryActive] = useState(true)
   const [baseActive, setBaseActive] = useState(true)
   const [combatActive, setCombatActive] = useState(true)
   const [specialActive, setSpecialActive] = useState(true)
@@ -60,8 +60,11 @@ export const DetailCard = ({
   const [evolutionsActive, setEvolutionsActive] = useState(true)
 
   const [pokemonList] = useAtom(pokemonListState)
-  const pokedex = usePokedexStore()
   const [showPokeball, setShowPokeball] = useState(false)
+
+  const pokedex = usePokedexStore()
+
+  const [category, setCategory] = useState<string | undefined>()
 
   const { data: currentPokemonEvolutions } = useQuery({
     queryKey: ['pokemon', 'evolutions', id],
@@ -69,6 +72,11 @@ export const DetailCard = ({
       return await axios
         .get<SpeciesDetail>(species.url)
         .then(async (response) => {
+          setCategory(
+            response.data.genera.find((gen) => gen.language.name === 'en')
+              ?.genus,
+          )
+
           return await axios
             .get<EvolutionChain>(response.data.evolution_chain.url)
             .then((chainResponse) => {
@@ -214,10 +222,14 @@ export const DetailCard = ({
                 ))}
               </div>
             )}
-            {/* species.genera.find.language.en */}
-            {speciesActive && (
-              <span className='text-xs text-gray-500'>Seed Pokémon</span>
-            )}
+            {categoryActive &&
+              (category ? (
+                <span className='text-xs text-gray-500'>{category}</span>
+              ) : (
+                <span className='text-xs text-gray-500'>
+                  Loading category...
+                </span>
+              ))}
             {baseActive && (
               <div className='flex justify-between gap-1 text-xs'>
                 <StatContainer
@@ -321,9 +333,9 @@ export const DetailCard = ({
               text='Type'
             />
             <StatToggleButton
-              isActive={speciesActive}
-              toggleState={setSpeciesActive}
-              text='Species'
+              isActive={categoryActive}
+              toggleState={setCategoryActive}
+              text='Category'
             />
             <StatToggleButton
               isActive={baseActive}

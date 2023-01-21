@@ -74,6 +74,15 @@ export type SpeciesDetail = {
   capture_rate: number
   evolution_chain: { url: string }
   evolves_from_species: Species | null
+  genera: Genera[]
+}
+
+export type Genera = {
+  genus: string
+  language: {
+    name: string
+    url: string
+  }
 }
 
 export type EvolutionChain = {
