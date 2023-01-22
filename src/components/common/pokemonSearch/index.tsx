@@ -44,9 +44,7 @@ export const SearchBox = ({ onSearch }: SearchBoxProps) => {
       className='flex flex-col gap-2 text-lg'
       onSubmit={(e) => {
         e.preventDefault()
-        if (value) {
-          searchPokemon(value)
-        }
+        searchPokemon(value)
       }}
     >
       <h1>Search a Pokémon by name or number id</h1>
