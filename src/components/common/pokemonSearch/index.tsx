@@ -1,15 +1,20 @@
 import type { ChangeEventHandler } from 'react'
 import { useState } from 'react'
-import type { PokemonSearch } from '../../../@types/pokemon'
-import { pokemonSearchList } from './data'
+
+import { useAtom } from 'jotai'
+import { FaSearch } from 'react-icons/fa'
+
+import { pokemonSearchListState } from '../../../lib/atoms/pokemonSearchList'
 
 type SearchBoxProps = {
-  onSearch: (pokemon: PokemonSearch) => void
+  onSearch: (pokemonName: string) => void
 }
 
 export const SearchBox = ({ onSearch }: SearchBoxProps) => {
   const [value, setValue] = useState('')
   const [showSearchList, setShowSearchList] = useState(false)
+  const [pokemonSearchList] = useAtom(pokemonSearchListState)
+
   const listItems = pokemonSearchList
     .filter((item) => {
       const searchTerm = value.toLowerCase()
@@ -28,29 +33,42 @@ export const SearchBox = ({ onSearch }: SearchBoxProps) => {
     setShowSearchList(true)
   }
 
-  const searchPokemon = (pokemon: PokemonSearch) => {
-    setValue(pokemon.searchableName)
+  const searchPokemon = (pokemonName: string) => {
+    setValue(pokemonName)
     setShowSearchList(false)
-    onSearch(pokemon)
+    onSearch(pokemonName)
   }
 
   return (
-    <div className='flex flex-col gap-2 text-lg'>
+    <form
+      className='flex flex-col gap-2 text-lg'
+      onSubmit={(e) => {
+        e.preventDefault()
+        if (value) {
+          searchPokemon(value)
+        }
+      }}
+    >
       <h1>Search a Pokémon by name or number id</h1>
 
       <div className='relative'>
-        <input
-          type='text'
-          className='w-full rounded p-2 text-black'
-          value={value}
-          onChange={onChange}
-        />
-
+        <div className='w-full flex items-center'>
+          <input
+            type='text'
+            className='w-full rounded p-2 text-black'
+            value={value}
+            onChange={onChange}
+            onBlur={() => setShowSearchList(false)}
+          />
+          <button className='p-1 ' type='submit' title='Search'>
+            <FaSearch className='w-8 h-8' />
+          </button>
+        </div>
         <div className='absolute w-full bg-gray-800'>
           {showSearchList &&
             listItems.map((pokemon) => (
               <div
-                onClick={() => searchPokemon(pokemon)}
+                onMouseDown={() => searchPokemon(pokemon.urlName)}
                 className='cursor-pointer p-2'
                 key={pokemon.id}
               >
@@ -59,6 +77,6 @@ export const SearchBox = ({ onSearch }: SearchBoxProps) => {
             ))}
         </div>
       </div>
-    </div>
+    </form>
   )
 }

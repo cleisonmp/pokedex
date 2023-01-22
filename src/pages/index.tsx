@@ -15,6 +15,8 @@ import { SearchBox } from '../components/common/pokemonSearch'
 import { PokemonList } from '../components/common/pokemonList'
 import { useAtom } from 'jotai'
 import { pokemonListState } from '../lib/atoms/pokemonList'
+import { toTitleCase } from '../lib/utils/toTitleCase'
+import { pokemonSearchListState } from '../lib/atoms/pokemonSearchList'
 
 type PokemonLink = {
   name: string
@@ -35,8 +37,10 @@ type PokemonByType = {
 const Home: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
   pokemons,
   pokemonTypes,
+  pokemonSearchList,
 }) => {
   const [, setPokemonList] = useAtom(pokemonListState)
+  const [, setPokemonSearchList] = useAtom(pokemonSearchListState)
   const [activeType, setActiveType] = useState('')
   const [filteredPokemons, setFilteredPokemons] = useState(pokemons)
 
@@ -54,12 +58,13 @@ const Home: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
     return pokemonsByType
   }, [pokemonTypes, pokemons])
 
-  const searchPokemon = (pokemonName: PokemonSearch) => {
+  const searchPokemon = (pokemonName: string) => {
     setActiveType('')
     setFilteredPokemons(
-      pokemons.filter((pokemon) => pokemon.name.includes(pokemonName.urlName)),
+      pokemons.filter((pokemon) => pokemon.name.includes(pokemonName)),
     )
   }
+
   const toggleType = (filterTypeName: string) => {
     if (activeType === filterTypeName) {
       setActiveType('')
@@ -76,6 +81,7 @@ const Home: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
 
   useEffect(() => {
     setPokemonList(pokemons)
+    setPokemonSearchList(pokemonSearchList)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
@@ -106,14 +112,16 @@ const Home: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
 export default Home
 
 export const getStaticProps = async () => {
+  //get all 151 classic pokemon
   const pokemonListRaw = await axios
-    .get<PokemonQuery>('https://pokeapi.co/api/v2/pokemon/?offset=0&limit=79')
+    .get<PokemonQuery>('https://pokeapi.co/api/v2/pokemon/?offset=0&limit=151')
     .then((response) => {
       return response.data.results
     })
 
   //TODO optimize data removing repeated link contents
   const allPokemonTypes: PokemonType[] = []
+  const pokemonSearchList: PokemonSearch[] = []
   const getAllPokemonData = async (pokemon: PokemonLink) => {
     const pokemonData = await axios
       .get<Pokemon>(pokemon.url)
@@ -126,6 +134,11 @@ export const getStaticProps = async () => {
     })
 
     allPokemonTypes.push(...types)
+    pokemonSearchList.push({
+      id: pokemonData.id,
+      urlName: pokemonData.name,
+      searchableName: toTitleCase(pokemonData.name),
+    })
 
     return {
       url: pokemon.url,
@@ -158,11 +171,15 @@ export const getStaticProps = async () => {
   })
 
   uniquePokemonTypes.sort((a, b) => (a.name < b.name ? -1 : 1))
+  pokemonSearchList.sort((a, b) =>
+    a.searchableName < b.searchableName ? -1 : 1,
+  )
 
   return {
     props: {
       pokemons: pokemonsData,
       pokemonTypes: uniquePokemonTypes,
+      pokemonSearchList,
     },
     revalidate: 60 * 60 * 24 * 30, // 30 days
   }
