@@ -10,5 +10,5 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 #__next {
-  @apply flex h-screen w-full grow flex-col;
+  @apply flex min-h-screen w-full grow flex-col;
 }
