@@ -41,6 +41,10 @@ module.exports = {
         ],
         start: ['"Press Start 2P"', 'cursive'],
       },
+      gridTemplateColumns: {
+        // 56px grid columns
+        fit56: 'repeat(auto-fit, minmax(3.5rem, 1fr))',
+      },
       opacity: {
         85: '.85',
       },

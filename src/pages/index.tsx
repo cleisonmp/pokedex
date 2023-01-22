@@ -7,7 +7,7 @@ import type {
   DetailedPokemon,
   Pokemon,
   PokemonSearch,
-  PokemonTypeLink,
+  PokemonType,
 } from '../@types/pokemon'
 
 import { Header } from '../components/common/header'
@@ -113,7 +113,7 @@ export const getStaticProps = async () => {
     })
 
   //TODO optimize data removing repeated link contents
-  const allPokemonTypes: PokemonTypeLink[] = []
+  const allPokemonTypes: PokemonType[] = []
   const getAllPokemonData = async (pokemon: PokemonLink) => {
     const pokemonData = await axios
       .get<Pokemon>(pokemon.url)
@@ -121,7 +121,11 @@ export const getStaticProps = async () => {
         return response.data
       })
 
-    allPokemonTypes.push(...pokemonData.types.map((type) => type.type))
+    const types = pokemonData.types.map((type) => {
+      return { slot: type.slot, ...type.type }
+    })
+
+    allPokemonTypes.push(...types)
 
     return {
       url: pokemon.url,
@@ -132,7 +136,7 @@ export const getStaticProps = async () => {
       image: pokemonData.sprites.front_default,
       imageHq: pokemonData.sprites.other['official-artwork'].front_default,
       stats: pokemonData.stats,
-      types: pokemonData.types.map((types) => types.type),
+      types,
       weight: pokemonData.weight,
       height: pokemonData.height,
     }
@@ -141,7 +145,7 @@ export const getStaticProps = async () => {
   const pokemonsData: DetailedPokemon[] = await Promise.all(
     pokemonDataPromisses,
   )
-  const uniquePokemonTypes: PokemonTypeLink[] = []
+  const uniquePokemonTypes: PokemonType[] = []
 
   allPokemonTypes.forEach((type) => {
     if (

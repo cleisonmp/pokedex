@@ -16,6 +16,7 @@ import type {
   DetailedPokemon,
   EvolutionChain,
   SpeciesDetail,
+  TypeDetails,
 } from '../../../../@types/pokemon'
 import { pokemonListState } from '../../../../lib/atoms/pokemonList'
 import { toTitleCase } from '../../../../lib/utils/toTitleCase'
@@ -66,7 +67,7 @@ export const DetailCard = ({
 
   const [category, setCategory] = useState<string | undefined>()
 
-  const { data: currentPokemonEvolutions } = useQuery({
+  const { data: evolutionsData } = useQuery({
     queryKey: ['pokemon', 'evolutions', id],
     queryFn: async () => {
       return await axios
@@ -108,7 +109,7 @@ export const DetailCard = ({
     },
   })
 
-  const { data: currentPokemonAbilities } = useQuery({
+  const { data: abilitiesData } = useQuery({
     queryKey: ['pokemon', 'abilities', id],
     queryFn: async () => {
       const abilitiesPromisses = abilities.map(async (ability) => {
@@ -126,6 +127,39 @@ export const DetailCard = ({
             ?.effect ?? ''
         return { id, name, effect }
       })
+    },
+  })
+
+  const { data: damageRelationsData } = useQuery({
+    queryKey: ['pokemon', 'damage', id],
+    queryFn: async () => {
+      const mainType = types.find((type) => type.slot === 1)
+
+      if (mainType) {
+        const typeData = await axios
+          .get<TypeDetails>(mainType.url)
+          .then((response) => {
+            return response.data
+          })
+        const resistances: string[] = []
+        const weaknesses: string[] = []
+        resistances.push(
+          ...typeData.damage_relations.half_damage_from.map(
+            (half) => half.name,
+          ),
+        )
+        weaknesses.push(
+          ...typeData.damage_relations.double_damage_from.map(
+            (half) => half.name,
+          ),
+        )
+
+        return {
+          resistances: resistances.sort(),
+          weaknesses: weaknesses.sort(),
+        }
+      }
+      return null
     },
   })
 
@@ -295,19 +329,33 @@ export const DetailCard = ({
               </div>
             )}
             {resistancesActive && (
-              <div className='flex justify-between gap-1 text-xs'>
-                {/* type.id.damage_relations.half_damage_from[] */}
-                <StatContainer value={'Water'} Icon={MdShield} />
-                <StatContainer value={'Water'} Icon={MdShield} />
-                <StatContainer value={'Water'} Icon={MdShield} />
+              <div className='grid grid-cols-fit56 gap-1 text-xs'>
+                {damageRelationsData ? (
+                  damageRelationsData.resistances.map((resistance) => (
+                    <StatContainer
+                      key={resistance}
+                      value={toTitleCase(resistance)}
+                      Icon={MdShield}
+                    />
+                  ))
+                ) : (
+                  <p className='text-gray-800'>Loading resistances...</p>
+                )}
               </div>
             )}
             {weaknessesActive && (
-              <div className='flex justify-between gap-1 text-xs'>
-                {/* type.id.damage_relations.double_damage_from[] */}
-                <StatContainer value={'Fire'} Icon={BiTrendingDown} />
-                <StatContainer value={'Fire'} Icon={BiTrendingDown} />
-                <StatContainer value={'Fire'} Icon={BiTrendingDown} />
+              <div className='grid grid-cols-fit56 gap-1 text-xs'>
+                {damageRelationsData ? (
+                  damageRelationsData.weaknesses.map((weakness) => (
+                    <StatContainer
+                      key={weakness}
+                      value={toTitleCase(weakness)}
+                      Icon={BiTrendingDown}
+                    />
+                  ))
+                ) : (
+                  <p className='text-gray-800'>Loading weaknesses...</p>
+                )}
               </div>
             )}
             {catchActive && (
@@ -409,10 +457,10 @@ export const DetailCard = ({
       </div>
       <div className='flex flex-col gap-2'>
         {abilitiesActive &&
-          (currentPokemonAbilities ? (
+          (abilitiesData ? (
             <div className=''>
               <span className='font-bold text-gray-800'>Abilities:</span>
-              {currentPokemonAbilities.map((ability) => (
+              {abilitiesData.map((ability) => (
                 <Accordion key={ability.id} title={toTitleCase(ability.name)}>
                   <div className='max-w-sm px-2 pb-2 text-gray-800'>
                     {ability.effect}
@@ -426,8 +474,8 @@ export const DetailCard = ({
             </p>
           ))}
         {evolutionsActive &&
-          (currentPokemonEvolutions ? (
-            <PokemonList pokemons={currentPokemonEvolutions} />
+          (evolutionsData ? (
+            <PokemonList pokemons={evolutionsData} />
           ) : (
             <p className='text-lg font-bold text-gray-800'>
               Loading evolutions...

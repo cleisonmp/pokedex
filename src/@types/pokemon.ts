@@ -15,7 +15,7 @@ export type Pokemon = {
   species: Species
   sprites: Sprites
   stats: Stat[]
-  types: PokemonType[]
+  types: PokemonApiType[]
   weight: number
 }
 
@@ -56,13 +56,9 @@ export type Stat = {
   }
 }
 
-export type PokemonType = {
+export type PokemonApiType = {
   slot: number
-  type: PokemonTypeLink
-}
-export type PokemonTypeLink = {
-  name: string
-  url: string
+  type: { name: string; url: string }
 }
 
 export type Species = {
@@ -98,12 +94,36 @@ export type EvolvesTo = {
   species: Species
 }
 
+export type TypeDetails = {
+  id: number
+  name: string
+  damage_relations: DamageRelations
+}
+
+export type DamageRelations = {
+  double_damage_from: DamageLink[]
+  double_damage_to: DamageLink[]
+  half_damage_from: DamageLink[]
+  half_damage_to: DamageLink[]
+}
+
+export type DamageLink = {
+  name: string
+  url: string
+}
+
 export type DetailedPokemon = {
   url: string
   image: string
   imageHq: string | null
-  types: PokemonTypeLink[]
+  types: PokemonType[]
 } & Pick<
   Pokemon,
   'id' | 'name' | 'abilities' | 'species' | 'stats' | 'weight' | 'height'
 >
+
+export type PokemonType = {
+  slot: number
+  name: string
+  url: string
+}
