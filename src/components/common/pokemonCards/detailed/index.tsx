@@ -266,70 +266,73 @@ export const DetailCard = ({
                   Loading category...
                 </span>
               ))}
-            {baseActive && (
-              <div className='flex justify-between gap-1 text-xs'>
-                <StatContainer
-                  value={
-                    stats.find((stat) => stat.stat.name === 'hp')?.base_stat ??
-                    ''
-                  }
-                  prefix='HP'
-                />
-                <StatContainer
-                  value={(weight * 0.1).toFixed(1)}
-                  prefix='W'
-                  sufix='kg'
-                />
-                <StatContainer
-                  value={(height * 0.1).toFixed(1)}
-                  prefix='H'
-                  sufix='m'
-                />
-              </div>
-            )}
-            {combatActive && (
-              <div className='flex justify-between gap-1 text-xs'>
-                <StatContainer
-                  value={
-                    stats.find((stat) => stat.stat.name === 'attack')
-                      ?.base_stat ?? ''
-                  }
-                  prefix='Atk'
-                />
-                <StatContainer
-                  value={
-                    stats.find((stat) => stat.stat.name === 'defense')
-                      ?.base_stat ?? ''
-                  }
-                  prefix='Def'
-                />
-                <StatContainer
-                  value={
-                    stats.find((stat) => stat.stat.name === 'speed')
-                      ?.base_stat ?? ''
-                  }
-                  prefix='Spd'
-                />
-              </div>
-            )}
-            {specialActive && (
-              <div className='flex gap-1 text-xs'>
-                <StatContainer
-                  value={
-                    stats.find((stat) => stat.stat.name === 'special-attack')
-                      ?.base_stat ?? ''
-                  }
-                  prefix='SAtk'
-                />
-                <StatContainer
-                  value={
-                    stats.find((stat) => stat.stat.name === 'special-defense')
-                      ?.base_stat ?? ''
-                  }
-                  prefix='SDef'
-                />
-              </div>
-            )}
+            <div className='grid grid-cols-3 justify-between gap-1 text-xs'>
+              {baseActive && (
+                <>
+                  <StatContainer
+                    value={
+                      stats.find((stat) => stat.stat.name === 'hp')
+                        ?.base_stat ?? ''
+                    }
+                    prefix='HP'
+                  />
+                  <StatContainer
+                    value={(weight * 0.1).toFixed(1)}
+                    prefix='W'
+                    sufix='kg'
+                  />
+                  <StatContainer
+                    value={(height * 0.1).toFixed(1)}
+                    prefix='H'
+                    sufix='m'
+                  />
+                </>
+              )}
+              {combatActive && (
+                <>
+                  <StatContainer
+                    value={
+                      stats.find((stat) => stat.stat.name === 'attack')
+                        ?.base_stat ?? ''
+                    }
+                    prefix='Atk'
+                  />
+                  <StatContainer
+                    value={
+                      stats.find((stat) => stat.stat.name === 'defense')
+                        ?.base_stat ?? ''
+                    }
+                    prefix='Def'
+                  />
+                  <StatContainer
+                    value={
+                      stats.find((stat) => stat.stat.name === 'speed')
+                        ?.base_stat ?? ''
+                    }
+                    prefix='Spd'
+                  />
+                </>
+              )}
+              {specialActive && (
+                <>
+                  <StatContainer
+                    value={
+                      stats.find((stat) => stat.stat.name === 'special-attack')
+                        ?.base_stat ?? ''
+                    }
+                    prefix='SAtk'
+                  />
+                  <StatContainer
+                    value={
+                      stats.find((stat) => stat.stat.name === 'special-defense')
+                        ?.base_stat ?? ''
+                    }
+                    prefix='SDef'
+                  />
+                </>
+              )}
+            </div>
+
             {resistancesActive && (
               <div className='grid grid-cols-fit56 gap-1 text-xs'>
                 {damageRelationsData ? (
