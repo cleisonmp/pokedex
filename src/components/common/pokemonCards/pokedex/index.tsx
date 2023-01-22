@@ -7,6 +7,7 @@ import {
 } from '../../../../lib/atoms/editModal'
 
 import { usePokedexStore } from '../../../../lib/stores/pokedex'
+import { Button } from '../../button'
 import { BasicCard } from '../basic'
 
 type PokedexCardProps = {
@@ -31,20 +32,12 @@ export const PokedexCard = ({ id, name, image }: PokedexCardProps) => {
         <BasicCard name={name} image={image} />
       </Link>
       <div className='flex justify-between px-2 py-1 text-white text-sm'>
-        <button
-          type='button'
-          onClick={handleRename}
-          className='bg-app-secondary px-2 font-bold rounded-lg transition-all hover:bg-app-tertiary focus:outline-none focus-visible:ring-1 focus-visible:ring-app-tertiary'
-        >
-          Rename
-        </button>
-        <button
-          type='button'
-          onClick={() => removeFromPokedex(id)}
-          className='bg-app-primary px-2 font-bold rounded-lg transition-all hover:bg-app-tertiary focus:outline-none focus-visible:ring-1 focus-visible:ring-app-tertiary'
-        >
-          Release
-        </button>
+        <Button text='Rename' clickHandler={handleRename} />
+        <Button
+          text='Release'
+          style='cancel'
+          clickHandler={() => removeFromPokedex(id)}
+        />
       </div>
     </div>
   )

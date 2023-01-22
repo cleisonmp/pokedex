@@ -4,6 +4,7 @@ import Link from 'next/link'
 import type { DetailedPokemon } from '../../../@types/pokemon'
 import { BasicCard } from '../pokemonCards/basic'
 import { PokedexCard } from '../pokemonCards/pokedex'
+import { Button } from '../button'
 
 type PokemonListProps = {
   allowCatching?: boolean
@@ -46,12 +47,11 @@ export const PokemonList = ({
         )}
       </section>
       {hasMorePokemonsToShow && (
-        <button
-          className='flex select-none items-center justify-center rounded-lg bg-app-secondary py-2 px-4 font-bold text-white hover:bg-app-tertiary hover:text-app-text'
-          onClick={loadMorePokemons}
-        >
-          Load more...
-        </button>
+        <Button
+          text='Load more...'
+          size='medium'
+          clickHandler={loadMorePokemons}
+        />
       )}
     </>
   )

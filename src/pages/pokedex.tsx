@@ -10,6 +10,7 @@ import { useRef } from 'react'
 import { toTitleCase } from '../lib/utils/toTitleCase'
 import { useAtom } from 'jotai'
 import { pokemonToEditState, editModalState } from '../lib/atoms/editModal'
+import { Button } from '../components/common/button'
 
 const Pokedex: NextPage = () => {
   const { pokemons, update } = usePokedexStore()
@@ -51,19 +52,13 @@ const Pokedex: NextPage = () => {
             />
           </div>
           <div className='flex w-full justify-center gap-2'>
-            <button
-              type='submit'
-              className='hover:bg-grey inline-flex items-center rounded bg-teal-500 py-2 px-4 font-bold transition-colors hover:bg-teal-700'
-            >
-              <span>Save</span>
-            </button>
-            <button
-              type='button'
-              onClick={() => setIsEditing(false)}
-              className='hover:bg-grey inline-flex items-center rounded bg-red-500 py-2 px-4 font-bold transition-colors hover:bg-red-700'
-            >
-              <span>Cancel</span>
-            </button>
+            <Button style='confirm' type='submit' size='medium' text='Save' />
+            <Button
+              style='cancel'
+              size='medium'
+              text='Cancel'
+              clickHandler={() => setIsEditing(false)}
+            />
           </div>
         </form>
       </Modal>
