@@ -1,7 +1,6 @@
 import { useState } from 'react'
 import Image from 'next/image'
 
-import axios from 'axios'
 import { Transition } from '@headlessui/react'
 import { useAtom } from 'jotai'
 import type { ToastOptions } from 'react-toastify'
@@ -10,6 +9,8 @@ import { useQuery } from '@tanstack/react-query'
 
 import { MdCatchingPokemon, MdShield } from 'react-icons/md'
 import { BiTrendingDown } from 'react-icons/bi'
+
+import { api } from '../../../../services/api'
 
 import type {
   AbilityDetail,
@@ -27,6 +28,7 @@ import { StatToggleButton } from '../../pokemonStats/statToggleButton'
 import { Pokeball } from '../../pokeball/pokeball'
 import { Accordion } from '../../accordion'
 import { PokemonList } from '../../pokemonList'
+import { defaultImageUrlState } from '../../../../lib/atoms/defaultImageUrl'
 
 type DetailCardProps = {
   pokemon: DetailedPokemon
@@ -61,6 +63,7 @@ export const DetailCard = ({
   const [evolutionsActive, setEvolutionsActive] = useState(true)
 
   const [pokemonList] = useAtom(pokemonListState)
+  const [defaultImageUrl] = useAtom(defaultImageUrlState)
   const [showPokeball, setShowPokeball] = useState(false)
 
   const pokedex = usePokedexStore()
@@ -70,7 +73,7 @@ export const DetailCard = ({
   const { data: evolutionsData } = useQuery({
     queryKey: ['pokemon', 'evolutions', id],
     queryFn: async () => {
-      return await axios
+      return await api
         .get<SpeciesDetail>(species.url)
         .then(async (response) => {
           setCategory(
@@ -78,7 +81,7 @@ export const DetailCard = ({
               ?.genus,
           )
 
-          return await axios
+          return await api
             .get<EvolutionChain>(response.data.evolution_chain.url)
             .then((chainResponse) => {
               const basePokemon = pokemonList.find(
@@ -113,7 +116,7 @@ export const DetailCard = ({
     queryKey: ['pokemon', 'abilities', id],
     queryFn: async () => {
       const abilitiesPromisses = abilities.map(async (ability) => {
-        return await axios
+        return await api
           .get<AbilityDetail>(ability.ability.url)
           .then((response) => {
             return { ...response.data, slot: ability.slot }
@@ -138,7 +141,7 @@ export const DetailCard = ({
       const mainType = types.find((type) => type.slot === 1)
 
       if (mainType) {
-        const typeData = await axios
+        const typeData = await api
           .get<TypeDetails>(mainType.url)
           .then((response) => {
             return response.data
@@ -222,7 +225,7 @@ export const DetailCard = ({
         <div className='flex w-56 flex-col items-center justify-center rounded-lg border-8 border-gray-600 bg-gray-50 text-xl lg:w-64'>
           <div className='relative flex w-full justify-center'>
             <Image
-              src={imageHq ?? image}
+              src={`${defaultImageUrl}${imageHq ?? image}`}
               width='150'
               height='150'
               alt=''

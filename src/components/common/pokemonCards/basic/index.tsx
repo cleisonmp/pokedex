@@ -1,8 +1,10 @@
+import { useAtom } from 'jotai'
 import Image from 'next/image'
 import type { MouseEventHandler } from 'react'
 import { useState } from 'react'
 
 import { FaPencilAlt } from 'react-icons/fa'
+import { defaultImageUrlState } from '../../../../lib/atoms/defaultImageUrl'
 import { toTitleCase } from '../../../../lib/utils/toTitleCase'
 import { Modal } from '../../modal'
 
@@ -16,6 +18,7 @@ type BasicCardProps = {
 export const BasicCard = ({ name, image, onClick, onEdit }: BasicCardProps) => {
   const [isEditing, setIsEditing] = useState(false)
   const [newName, setNewName] = useState('')
+  const [defaultImageUrl] = useAtom(defaultImageUrlState)
   const allowEdit = !!onEdit
 
   const handleSave = () => {
@@ -63,7 +66,12 @@ export const BasicCard = ({ name, image, onClick, onEdit }: BasicCardProps) => {
         onClick={onClick}
         className='flex h-40 w-40 flex-col items-center justify-center overflow-hidden rounded-lg border-8 border-gray-700 bg-gray-50 text-xl text-gray-500 lg:h-48 lg:w-48'
       >
-        <Image src={image} width='90' height='90' alt='' />
+        <Image
+          src={`${defaultImageUrl}${image}`}
+          width='90'
+          height='90'
+          alt=''
+        />
         {isEditing}
 
         {allowEdit && (

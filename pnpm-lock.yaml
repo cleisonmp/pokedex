@@ -12,6 +12,7 @@ specifiers:
   '@typescript-eslint/parser': ^5.47.1
   autoprefixer: ^10.4.7
   axios: ^1.2.3
+  compress-json: ^2.1.2
   eslint: ^8.30.0
   eslint-config-next: 13.1.1
   eslint-plugin-tailwindcss: ^3.8.0
@@ -34,6 +35,7 @@ dependencies:
   '@headlessui/react': 1.7.7_biqbaboplfbrettd7655fr4n2y
   '@tanstack/react-query': 4.22.3_biqbaboplfbrettd7655fr4n2y
   axios: 1.2.3
+  compress-json: 2.1.2
   jotai: 1.13.1_react@18.2.0
   next: 13.1.1_biqbaboplfbrettd7655fr4n2y
   react: 18.2.0
@@ -855,6 +857,10 @@ packages:
     engines: {node: '>= 0.8'}
     dependencies:
       delayed-stream: 1.0.0
+    dev: false
+
+  /compress-json/2.1.2:
+    resolution: {integrity: sha512-91247RD8bKQXzRmXUS4zGT250mhw86+J9X8w2L2SGtRE7g0CvzjOETFaFmsDdaXPWv8T7L9iiM7kdcnnH3BH7w==}
     dev: false
 
   /concat-map/0.0.1:
