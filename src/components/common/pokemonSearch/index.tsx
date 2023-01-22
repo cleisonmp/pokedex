@@ -53,7 +53,7 @@ export const SearchBox = ({ onSearch }: SearchBoxProps) => {
         <div className='w-full flex items-center'>
           <input
             type='text'
-            className='w-full rounded p-2 text-black'
+            className='w-full rounded p-2 text-black shadow-sm'
             value={value}
             onChange={onChange}
             onBlur={() => setShowSearchList(false)}
@@ -62,7 +62,7 @@ export const SearchBox = ({ onSearch }: SearchBoxProps) => {
             <FaSearch className='w-8 h-8' />
           </button>
         </div>
-        <div className='absolute w-full bg-gray-800'>
+        <div className='absolute w-full bg-app-backgroundDark'>
           {showSearchList &&
             listItems.map((pokemon) => (
               <div

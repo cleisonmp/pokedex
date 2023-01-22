@@ -10,6 +10,19 @@ module.exports = {
         25: '.25',
         85: '.85',
       },
+      colors: {
+        app: {
+          //primary: '#E3350D',
+          primary: '#CC0000',
+          secondary: '#1847D7',
+          tertiary: '#E6BC2F',
+
+          background: '#F5F5F5',
+          backgroundDark: '#919191',
+          text: '#393939',
+          label: '#919191',
+        },
+      },
       fontFamily: {
         sans: [
           'Inter',

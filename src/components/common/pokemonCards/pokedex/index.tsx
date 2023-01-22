@@ -1,4 +1,11 @@
-import type { MouseEventHandler } from 'react'
+import { useAtom } from 'jotai'
+import Link from 'next/link'
+
+import {
+  editModalState,
+  pokemonToEditState,
+} from '../../../../lib/atoms/editModal'
+
 import { usePokedexStore } from '../../../../lib/stores/pokedex'
 import { BasicCard } from '../basic'
 
@@ -6,29 +13,39 @@ type PokedexCardProps = {
   id: number
   name: string
   image: string
-  onClick: MouseEventHandler<HTMLButtonElement>
 }
 
-export const PokedexCard = ({ id, name, image, onClick }: PokedexCardProps) => {
-  const { update, remove } = usePokedexStore()
+export const PokedexCard = ({ id, name, image }: PokedexCardProps) => {
+  const removeFromPokedex = usePokedexStore((state) => state.remove)
+  const [, setIsEditing] = useAtom(editModalState)
+  const [, setPokemonToEdit] = useAtom(pokemonToEditState)
+
+  const handleRename = () => {
+    setPokemonToEdit({ id, name })
+    setIsEditing(true)
+  }
 
   return (
     <div className='relative'>
-      <BasicCard
-        name={name}
-        image={image}
-        onClick={onClick}
-        onEdit={(newName) => {
-          update(id, newName)
-        }}
-      />
-      <button
-        type='button'
-        onClick={() => remove(id)}
-        className='absolute right-0 top-0 inline-flex translate-x-1/4 -translate-y-1/4 items-center justify-center rounded-full bg-gray-300 px-2 font-bold text-red-500 transition-all hover:bg-gray-500 focus:outline-none focus-visible:ring-1 focus-visible:ring-gray-500'
-      >
-        X
-      </button>
+      <Link href={`/pokemon/${name}`} key={id}>
+        <BasicCard name={name} image={image} />
+      </Link>
+      <div className='flex justify-between px-2 py-1 text-white text-sm'>
+        <button
+          type='button'
+          onClick={handleRename}
+          className='bg-app-secondary px-2 font-bold rounded-lg transition-all hover:bg-app-tertiary focus:outline-none focus-visible:ring-1 focus-visible:ring-app-tertiary'
+        >
+          Rename
+        </button>
+        <button
+          type='button'
+          onClick={() => removeFromPokedex(id)}
+          className='bg-app-primary px-2 font-bold rounded-lg transition-all hover:bg-app-tertiary focus:outline-none focus-visible:ring-1 focus-visible:ring-app-tertiary'
+        >
+          Release
+        </button>
+      </div>
     </div>
   )
 }

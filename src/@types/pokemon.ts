@@ -114,7 +114,7 @@ export type DamageLink = {
 
 export type DetailedPokemon = {
   image: string
-  imageHq: string | undefined
+  imageHq: string | undefined | null
   types: PokemonType[]
 } & Pick<
   Pokemon,

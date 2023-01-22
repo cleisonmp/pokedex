@@ -6,10 +6,17 @@ import { toTitleCase } from '../../../lib/utils/toTitleCase'
 type ModalProps = {
   title: string
   isOpen: boolean
+  withBackground?: boolean
   setIsOpen: Dispatch<SetStateAction<boolean>>
   children: ReactNode
 }
-export const Modal = ({ title, isOpen, setIsOpen, children }: ModalProps) => {
+export const Modal = ({
+  title,
+  isOpen,
+  withBackground = true,
+  setIsOpen,
+  children,
+}: ModalProps) => {
   const closeModal = () => {
     setIsOpen(false)
   }
@@ -40,7 +47,11 @@ export const Modal = ({ title, isOpen, setIsOpen, children }: ModalProps) => {
               leaveFrom='opacity-100 scale-100'
               leaveTo='opacity-0 scale-95'
             >
-              <Dialog.Panel className='relative overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all'>
+              <Dialog.Panel
+                className={`relative overflow-hidden rounded-2xl p-6 text-left align-middle shadow-xl transition-all ${
+                  withBackground ? 'bg-white' : ''
+                }`}
+              >
                 <Dialog.Title
                   as='h3'
                   className='text-lg font-medium leading-6 text-gray-900'
