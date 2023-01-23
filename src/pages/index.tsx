@@ -115,7 +115,7 @@ const Home: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
             <button
               key={name}
               onClick={() => toggleType(name)}
-              className={`rounded border p-2 shadow-sm hover:scale-105 hover:bg-slate-300 ${
+              className={`rounded border p-2 shadow-sm hover:scale-105 transition-all hover:bg-slate-300 ${
                 activeType === name ? 'bg-app-tertiary' : ''
               }`}
             >

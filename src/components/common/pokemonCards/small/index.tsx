@@ -13,7 +13,7 @@ export const SmallCard = ({ name, image }: SmallCardProps) => {
   return (
     <>
       <div
-        className={`flex h-28 w-28 flex-col items-center justify-center rounded-lg border-8 border-gray-700 bg-gray-50 text-xl text-gray-500 leading-none overflow-visible shadow-2xl hover:scale-105`}
+        className={`flex h-28 w-28 flex-col items-center justify-center rounded-lg border-8 border-gray-700 bg-gray-50 text-xl text-gray-500 leading-none overflow-visible shadow-2xl hover:scale-105 transition-all`}
       >
         <Image
           src={`${defaultImageUrl}${image}`}

@@ -14,7 +14,7 @@ export const BasicCard = ({ name, image }: BasicCardProps) => {
 
   return (
     <>
-      <div className='flex h-40 w-40 flex-col items-center justify-center overflow-hidden rounded-lg border-8 border-gray-700 bg-gray-50 text-xl text-gray-500 lg:h-48 lg:w-48 shadow-2xl hover:scale-105'>
+      <div className='flex h-40 w-40 flex-col items-center justify-center overflow-hidden rounded-lg border-8 border-gray-700 bg-gray-50 text-xl text-gray-500 lg:h-48 lg:w-48 shadow-2xl hover:scale-105 transition-all'>
         <Image
           src={`${defaultImageUrl}${image}`}
           width='90'
