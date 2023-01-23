@@ -4,7 +4,6 @@ import type {
   InferGetServerSidePropsType,
   NextPage,
 } from 'next'
-import Image from 'next/image'
 import Link from 'next/link'
 
 import { useQuery } from '@tanstack/react-query'
@@ -13,28 +12,20 @@ import { useAtom } from 'jotai'
 import type { ToastOptions } from 'react-toastify'
 import { toast } from 'react-toastify'
 
-import { AiOutlineDoubleRight } from 'react-icons/ai'
-import { BiTrendingDown } from 'react-icons/bi'
-import { MdCatchingPokemon, MdShield } from 'react-icons/md'
+import { MdCatchingPokemon } from 'react-icons/md'
 
 import { Header } from '../../components/common/header'
-import {
-  getPokemon,
-  getEvolutions,
-  getAbilitiesDetails,
-  getDamageRelations,
-} from '../../lib/queries'
-import { toTitleCase } from '../../lib/utils/toTitleCase'
+import { getPokemon } from '../../lib/queries'
 import { usePokedexStore } from '../../lib/stores/pokedex'
 import { defaultImageUrlState } from '../../lib/atoms/defaultImageUrl'
 
-import { Accordion } from '../../components/common/accordion'
 import { Modal } from '../../components/common/modal'
-import { SmallCard } from '../../components/common/pokemonCards/small'
 import { Pokeball } from '../../components/common/pokeball/pokeball'
-import { StatContainer } from '../../components/common/pokemonStats/statContainer'
-import { StatToggleButton } from '../../components/common/pokemonStats/statToggleButton'
-import { Title } from '../../components/common/text/title'
+import { Evolutions } from '../../components/pages/pokemon/evolutions'
+import { Abilities } from '../../components/pages/pokemon/abilities'
+import { StatsControllerPanel } from '../../components/pages/pokemon/statsControllerPanel'
+import { useStatsPanelStore } from '../../lib/stores/statsPanel'
+import { DetailedCard } from '../../components/pages/pokemon/detailedCard'
 
 //this page could be done using getStaticPaths
 //for the purpose of this test I'll use tanstack to load data instead
@@ -42,16 +33,7 @@ const PokemonPage: NextPage<
   InferGetServerSidePropsType<typeof getServerSideProps>
 > = ({ id }) => {
   const [category, setCategory] = useState<string | undefined>()
-  const [typeActive, setTypeActive] = useState(true)
-  const [categoryActive, setCategoryActive] = useState(true)
-  const [baseActive, setBaseActive] = useState(true)
-  const [combatActive, setCombatActive] = useState(true)
-  const [specialActive, setSpecialActive] = useState(true)
-  const [weaknessesActive, setWeaknessesActive] = useState(true)
-  const [resistancesActive, setResistancesActive] = useState(true)
-  const [catchActive, setCatchActive] = useState(true)
-  const [abilitiesActive, setAbilitiesActive] = useState(true)
-  const [evolutionsActive, setEvolutionsActive] = useState(true)
+  const { abilitiesActive, evolutionsActive } = useStatsPanelStore()
 
   const [showPokeball, setShowPokeball] = useState(false)
 
@@ -67,46 +49,6 @@ const PokemonPage: NextPage<
     queryFn: () => getPokemon(`pokemon/${id}`),
   })
 
-  const { data: evolutionsData } = useQuery({
-    queryKey: ['pokemon', 'evolutions', id],
-    queryFn: async () => {
-      if (pokemonData) {
-        const evolutionsData = await getEvolutions(pokemonData.species.url)
-        setCategory(evolutionsData.category)
-
-        return evolutionsData.evolutions
-      }
-      return null
-    },
-    enabled: !!pokemonData,
-  })
-
-  const { data: abilitiesData } = useQuery({
-    queryKey: ['pokemon', 'abilities', id],
-    queryFn: async () => {
-      if (pokemonData) {
-        return await getAbilitiesDetails(pokemonData.abilities)
-      }
-      return null
-    },
-    enabled: !!pokemonData,
-  })
-
-  const { data: damageRelationsData } = useQuery({
-    queryKey: ['pokemon', 'damage', id],
-    queryFn: async () => {
-      if (pokemonData) {
-        const mainType = pokemonData.types.find((type) => type.slot === 1)
-
-        if (mainType) {
-          return getDamageRelations(mainType.url)
-        }
-      }
-      return null
-    },
-    enabled: !!pokemonData,
-  })
-
   //main query
   if (isError || isLoading) {
     return (
@@ -119,9 +61,7 @@ const PokemonPage: NextPage<
     )
   }
 
-  const { image, imageHq, name, stats, types, weight, height } = pokemonData
-
-  const hasMoreThanOneType = types.length > 1
+  const { image, imageHq, stats, weight, height } = pokemonData
 
   const speed = stats.find((stat) => stat.stat.name === 'speed')?.base_stat ?? 0
   const defense =
@@ -199,202 +139,31 @@ const PokemonPage: NextPage<
       <Header />
       <div className='flex flex-col gap-2 px-2 md:px-10 lg:px-16 items-center pb-5 pt-2 md:pt-4'>
         <div className='flex gap-4 text-app-text md:gap-10 lg:gap-20'>
-          <div className='flex w-64 h-min shrink-0 flex-col items-center justify-center rounded-lg border-8 border-gray-600 bg-gray-50 text-xl md:w-72 lg:w-80'>
-            <div className='relative flex w-full justify-center'>
-              <Image
-                src={`${defaultImageUrl}${imageHq ?? image}`}
-                width='150'
-                height='150'
-                alt=''
-                className='scale-125'
-                priority
-              />
-              <span className='absolute top-3 right-3 rounded-full bg-gray-700 px-2 text-sm font-bold text-white'>
-                {pokemonData.id.toString().padStart(3, '0')}
-              </span>
-            </div>
-            <div className='flex w-full flex-col gap-1 bg-gray-200 p-5 h-full md:gap-2'>
-              <div className='flex items-center justify-between gap-2'>
-                <p className='w-full text-lg font-extrabold leading-none'>
-                  {toTitleCase(name.replaceAll('-', ' '))}
-                </p>
-                {typeActive && !hasMoreThanOneType && (
-                  <div
-                    key={types[0]?.name}
-                    className='h-min w-min rounded-xl bg-gray-700 px-2 py-1 text-xs md:text-sm font-bold text-white'
-                  >
-                    {toTitleCase(types[0]?.name ?? '')}
-                  </div>
-                )}
-              </div>
-              {typeActive && hasMoreThanOneType && (
-                <div className='flex items-center gap-2'>
-                  {types.map((type) => (
-                    <div
-                      key={type.name}
-                      className='h-min w-min rounded-xl bg-gray-700 px-2 py-1 text-xs md:text-sm font-bold text-white'
-                    >
-                      {toTitleCase(type.name)}
-                    </div>
-                  ))}
-                </div>
-              )}
-              {categoryActive &&
-                (category ? (
-                  <span className='text-xs md:text-sm text-gray-500'>
-                    {category}
-                  </span>
-                ) : (
-                  <span className='text-xs md:text-sm text-gray-500'>
-                    Loading category...
-                  </span>
-                ))}
-              <div className='grid grid-cols-3 justify-between gap-1 text-xs md:text-sm md:gap-2'>
-                {baseActive && (
-                  <>
-                    <StatContainer value={hp} prefix='HP' />
-                    <StatContainer
-                      value={(weight * 0.1).toFixed(1)}
-                      prefix='W'
-                      sufix='kg'
-                    />
-                    <StatContainer
-                      value={(height * 0.1).toFixed(1)}
-                      prefix='H'
-                      sufix='m'
-                    />
-                  </>
-                )}
-                {combatActive && (
-                  <>
-                    <StatContainer value={attack} prefix='Atk' />
-                    <StatContainer value={defense} prefix='Def' />
-                    <StatContainer value={speed} prefix='Spd' />
-                  </>
-                )}
-                {specialActive && (
-                  <>
-                    <StatContainer
-                      value={
-                        stats.find(
-                          (stat) => stat.stat.name === 'special-attack',
-                        )?.base_stat ?? ''
-                      }
-                      prefix='SAtk'
-                    />
-                    <StatContainer
-                      value={
-                        stats.find(
-                          (stat) => stat.stat.name === 'special-defense',
-                        )?.base_stat ?? ''
-                      }
-                      prefix='SDef'
-                    />
-                  </>
-                )}
-              </div>
-
-              {resistancesActive && (
-                <div className='grid grid-cols-fit56 gap-1 text-xs md:text-sm md:gap-2'>
-                  {damageRelationsData ? (
-                    damageRelationsData.resistances.map((resistance) => (
-                      <StatContainer
-                        key={resistance}
-                        value={toTitleCase(resistance)}
-                        Icon={MdShield}
-                      />
-                    ))
-                  ) : (
-                    <p className='text-gray-800'>Loading resistances...</p>
-                  )}
-                </div>
-              )}
-              {weaknessesActive && (
-                <div className='grid grid-cols-fit56 gap-1 text-xs md:text-sm md:gap-2'>
-                  {damageRelationsData ? (
-                    damageRelationsData.weaknesses.map((weakness) => (
-                      <StatContainer
-                        key={weakness}
-                        value={toTitleCase(weakness)}
-                        Icon={BiTrendingDown}
-                      />
-                    ))
-                  ) : (
-                    <p className='text-gray-800'>Loading weaknesses...</p>
-                  )}
-                </div>
-              )}
-              {catchActive && (
-                <div>
-                  <span className='text-xs md:text-sm font-bold'>
-                    Catch difficulty
-                  </span>
-                  <div className='relative flex h-6 w-full overflow-hidden rounded-lg border border-gray-700 bg-gray-200'>
-                    <div className='absolute -left-1 h-full w-[110%] rounded-lg bg-gradient-to-r from-green-500 to-red-500'></div>
-                    <div
-                      className='absolute -right-1 h-full rounded-r-lg bg-gray-200'
-                      style={{ width: `${difficultyLevelDisplayBar}%` }}
-                    ></div>
-                  </div>
-                </div>
-              )}
-            </div>
-          </div>
+          <DetailedCard
+            imageUrl={`${defaultImageUrl}${imageHq ?? image}`}
+            id={pokemonData.id}
+            name={pokemonData.name}
+            types={pokemonData.types}
+            category={category}
+            hp={hp}
+            weight={weight}
+            height={height}
+            attack={attack}
+            defense={defense}
+            speed={speed}
+            specialAttack={
+              stats.find((stat) => stat.stat.name === 'special-attack')
+                ?.base_stat ?? 0
+            }
+            specialDefense={
+              stats.find((stat) => stat.stat.name === 'special-defense')
+                ?.base_stat ?? 0
+            }
+            difficultyLevelDisplayBar={difficultyLevelDisplayBar}
+          />
           <div className='flex flex-col gap-2 w-full'>
             <span className='font-bold'>Show Stats:</span>
-            <div className='grid grid-cols-1 gap-1 text-xs md:text-sm font-bold md:gap-2'>
-              <StatToggleButton
-                isActive={typeActive}
-                toggleState={setTypeActive}
-                text='Type'
-              />
-              <StatToggleButton
-                isActive={categoryActive}
-                toggleState={setCategoryActive}
-                text='Category'
-              />
-              <StatToggleButton
-                isActive={baseActive}
-                toggleState={setBaseActive}
-                text='Base'
-              />
-              <StatToggleButton
-                isActive={combatActive}
-                toggleState={setCombatActive}
-                text='Combat'
-              />
-              <StatToggleButton
-                isActive={specialActive}
-                toggleState={setSpecialActive}
-                text='Special'
-              />
-              <StatToggleButton
-                isActive={resistancesActive}
-                toggleState={setResistancesActive}
-                text='Resistances'
-              />
-              <StatToggleButton
-                isActive={weaknessesActive}
-                toggleState={setWeaknessesActive}
-                text='Weaknesses'
-              />
-
-              <StatToggleButton
-                isActive={catchActive}
-                toggleState={setCatchActive}
-                text='Catch difficulty'
-              />
-              <StatToggleButton
-                isActive={abilitiesActive}
-                toggleState={setAbilitiesActive}
-                text='Abilities'
-              />
-              <StatToggleButton
-                isActive={evolutionsActive}
-                toggleState={setEvolutionsActive}
-                text='Evolutions'
-              />
-            </div>
+            <StatsControllerPanel />
             {isCaught ? (
               <div className='flex justify-center'>
                 <Link href='/pokedex' title='View on pokédex'>
@@ -417,38 +186,17 @@ const PokemonPage: NextPage<
           </div>
         </div>
         <div className='flex flex-col gap-2 md:gap-6 self-center sm:w-[85%] md:w-[65%] items-center w-full'>
-          {abilitiesActive &&
-            (abilitiesData ? (
-              <div className='flex flex-col gap-2 w-full'>
-                <Title text='Abilities:' />
-                {abilitiesData.map((ability) => (
-                  <Accordion key={ability.id} title={toTitleCase(ability.name)}>
-                    <div className='max-w-sm sm:max-w-md md:max-w-lg lg:max-w-xl px-2 pb-2 text-gray-800 md:px-5'>
-                      {ability.effect}
-                    </div>
-                  </Accordion>
-                ))}
-              </div>
-            ) : (
-              <Title text='Loading abilities...' />
-            ))}
+          {abilitiesActive && (
+            <Abilities id={pokemonData.id} abilities={pokemonData.abilities} />
+          )}
+
           {evolutionsActive && (
             <div>
-              <Title text='Evolutions:' />
-              {evolutionsData ? (
-                <div className='flex gap-1'>
-                  {evolutionsData.map(({ name, image }, index) => (
-                    <div key={name} className='flex items-center '>
-                      {index > 0 && <AiOutlineDoubleRight size={20} />}
-                      <Link key={name} href={`/pokemon/${name}`}>
-                        <SmallCard name={name} image={image} />
-                      </Link>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <Title text='Loading evolutions...' />
-              )}
+              <Evolutions
+                url={pokemonData.species.url}
+                id={pokemonData.id}
+                setCategory={setCategory}
+              />
             </div>
           )}
         </div>
