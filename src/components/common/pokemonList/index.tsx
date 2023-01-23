@@ -30,7 +30,7 @@ export const PokemonList = ({
 
   return (
     <>
-      <section className='grid grid-cols-2 gap-3'>
+      <section className='grid grid-cols-2 gap-3 md:grid-cols-4 lg:grid-cols-5'>
         {pokemons.slice(0, pokemonsToShow).map((pokemon) =>
           pokedexMode ? (
             <PokedexCard
@@ -48,7 +48,7 @@ export const PokemonList = ({
       </section>
       {hasMorePokemonsToShow && (
         <Button
-          text='Load more...'
+          text='Load more'
           size='medium'
           clickHandler={loadMorePokemons}
         />

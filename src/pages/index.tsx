@@ -108,9 +108,9 @@ const Home: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
   return (
     <>
       <Header />
-      <main className='flex grow flex-col items-center gap-10 px-4 pb-10'>
+      <main className='flex grow flex-col items-center gap-10 px-4 pb-10 md:px-10'>
         <SearchBox onSearch={searchPokemon} />
-        <div className='grid grid-flow-row grid-cols-5 gap-2 text-xs'>
+        <div className='grid grid-flow-row grid-cols-5 gap-2 text-xs md:grid-cols-10'>
           {pokemonTypes.map((name) => (
             <button
               key={name}

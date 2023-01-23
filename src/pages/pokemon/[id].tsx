@@ -34,6 +34,7 @@ import { SmallCard } from '../../components/common/pokemonCards/small'
 import { Pokeball } from '../../components/common/pokeball/pokeball'
 import { StatContainer } from '../../components/common/pokemonStats/statContainer'
 import { StatToggleButton } from '../../components/common/pokemonStats/statToggleButton'
+import { Title } from '../../components/common/text/title'
 
 //this page could be done using getStaticPaths
 //for the purpose of this test I'll use tanstack to load data instead
@@ -196,9 +197,9 @@ const PokemonPage: NextPage<
       </Modal>
 
       <Header />
-      <div className='flex flex-col gap-2 px-2'>
-        <div className='flex gap-4 text-app-text'>
-          <div className='flex w-64 h-min shrink-0 flex-col items-center justify-center rounded-lg border-8 border-gray-600 bg-gray-50 text-xl'>
+      <div className='flex flex-col gap-2 px-2 md:px-10 lg:px-16 items-center pb-5 pt-2 md:pt-4'>
+        <div className='flex gap-4 text-app-text md:gap-10 lg:gap-20'>
+          <div className='flex w-64 h-min shrink-0 flex-col items-center justify-center rounded-lg border-8 border-gray-600 bg-gray-50 text-xl md:w-72 lg:w-80'>
             <div className='relative flex w-full justify-center'>
               <Image
                 src={`${defaultImageUrl}${imageHq ?? image}`}
@@ -212,7 +213,7 @@ const PokemonPage: NextPage<
                 {pokemonData.id.toString().padStart(3, '0')}
               </span>
             </div>
-            <div className='flex w-full flex-col gap-1 bg-gray-200 p-5 h-full'>
+            <div className='flex w-full flex-col gap-1 bg-gray-200 p-5 h-full md:gap-2'>
               <div className='flex items-center justify-between gap-2'>
                 <p className='w-full text-lg font-extrabold leading-none'>
                   {toTitleCase(name.replaceAll('-', ' '))}
@@ -220,7 +221,7 @@ const PokemonPage: NextPage<
                 {typeActive && !hasMoreThanOneType && (
                   <div
                     key={types[0]?.name}
-                    className='h-min w-min rounded-xl bg-gray-700 px-2 py-1 text-xs font-bold text-white'
+                    className='h-min w-min rounded-xl bg-gray-700 px-2 py-1 text-xs md:text-sm font-bold text-white'
                   >
                     {toTitleCase(types[0]?.name ?? '')}
                   </div>
@@ -231,7 +232,7 @@ const PokemonPage: NextPage<
                   {types.map((type) => (
                     <div
                       key={type.name}
-                      className='h-min w-min rounded-xl bg-gray-700 px-2 py-1 text-xs font-bold text-white'
+                      className='h-min w-min rounded-xl bg-gray-700 px-2 py-1 text-xs md:text-sm font-bold text-white'
                     >
                       {toTitleCase(type.name)}
                     </div>
@@ -240,13 +241,15 @@ const PokemonPage: NextPage<
               )}
               {categoryActive &&
                 (category ? (
-                  <span className='text-xs text-gray-500'>{category}</span>
+                  <span className='text-xs md:text-sm text-gray-500'>
+                    {category}
+                  </span>
                 ) : (
-                  <span className='text-xs text-gray-500'>
+                  <span className='text-xs md:text-sm text-gray-500'>
                     Loading category...
                   </span>
                 ))}
-              <div className='grid grid-cols-3 justify-between gap-1 text-xs'>
+              <div className='grid grid-cols-3 justify-between gap-1 text-xs md:text-sm md:gap-2'>
                 {baseActive && (
                   <>
                     <StatContainer value={hp} prefix='HP' />
@@ -292,7 +295,7 @@ const PokemonPage: NextPage<
               </div>
 
               {resistancesActive && (
-                <div className='grid grid-cols-fit56 gap-1 text-xs'>
+                <div className='grid grid-cols-fit56 gap-1 text-xs md:text-sm md:gap-2'>
                   {damageRelationsData ? (
                     damageRelationsData.resistances.map((resistance) => (
                       <StatContainer
@@ -307,7 +310,7 @@ const PokemonPage: NextPage<
                 </div>
               )}
               {weaknessesActive && (
-                <div className='grid grid-cols-fit56 gap-1 text-xs'>
+                <div className='grid grid-cols-fit56 gap-1 text-xs md:text-sm md:gap-2'>
                   {damageRelationsData ? (
                     damageRelationsData.weaknesses.map((weakness) => (
                       <StatContainer
@@ -323,7 +326,9 @@ const PokemonPage: NextPage<
               )}
               {catchActive && (
                 <div>
-                  <span className='text-xs font-bold'>Catch difficulty</span>
+                  <span className='text-xs md:text-sm font-bold'>
+                    Catch difficulty
+                  </span>
                   <div className='relative flex h-6 w-full overflow-hidden rounded-lg border border-gray-700 bg-gray-200'>
                     <div className='absolute -left-1 h-full w-[110%] rounded-lg bg-gradient-to-r from-green-500 to-red-500'></div>
                     <div
@@ -337,7 +342,7 @@ const PokemonPage: NextPage<
           </div>
           <div className='flex flex-col gap-2 w-full'>
             <span className='font-bold'>Show Stats:</span>
-            <div className='grid grid-cols-1 gap-1 text-xs font-bold '>
+            <div className='grid grid-cols-1 gap-1 text-xs md:text-sm font-bold md:gap-2'>
               <StatToggleButton
                 isActive={typeActive}
                 toggleState={setTypeActive}
@@ -411,27 +416,25 @@ const PokemonPage: NextPage<
             )}
           </div>
         </div>
-        <div className='flex flex-col gap-2'>
+        <div className='flex flex-col gap-2 md:gap-6 self-center sm:w-[85%] md:w-[65%] items-center w-full'>
           {abilitiesActive &&
             (abilitiesData ? (
-              <div className='flex flex-col gap-2'>
-                <span className='font-bold text-gray-800'>Abilities:</span>
+              <div className='flex flex-col gap-2 w-full'>
+                <Title text='Abilities:' />
                 {abilitiesData.map((ability) => (
                   <Accordion key={ability.id} title={toTitleCase(ability.name)}>
-                    <div className='max-w-sm px-2 pb-2 text-gray-800'>
+                    <div className='max-w-sm sm:max-w-md md:max-w-lg lg:max-w-xl px-2 pb-2 text-gray-800 md:px-5'>
                       {ability.effect}
                     </div>
                   </Accordion>
                 ))}
               </div>
             ) : (
-              <p className='text-lg font-bold text-gray-800'>
-                Loading abilities...
-              </p>
+              <Title text='Loading abilities...' />
             ))}
           {evolutionsActive && (
             <div>
-              <span className='font-bold text-gray-800'>Evolutions:</span>
+              <Title text='Evolutions:' />
               {evolutionsData ? (
                 <div className='flex gap-1'>
                   {evolutionsData.map(({ name, image }, index) => (
@@ -444,9 +447,7 @@ const PokemonPage: NextPage<
                   ))}
                 </div>
               ) : (
-                <p className='text-lg font-bold text-gray-800'>
-                  Loading evolutions...
-                </p>
+                <Title text='Loading evolutions...' />
               )}
             </div>
           )}

@@ -41,7 +41,7 @@ export const SearchBox = ({ onSearch }: SearchBoxProps) => {
 
   return (
     <form
-      className='flex flex-col gap-2 text-lg'
+      className='flex flex-col gap-2 text-lg md:gap-3'
       onSubmit={(e) => {
         e.preventDefault()
         searchPokemon(value)
