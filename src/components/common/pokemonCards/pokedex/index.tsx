@@ -28,7 +28,7 @@ export const PokedexCard = ({ id, name, image }: PokedexCardProps) => {
 
   return (
     <div className='relative'>
-      <Link href={`/pokemon/${name}`} key={id}>
+      <Link href={`/pokemon/${id}`} key={id}>
         <BasicCard name={name} image={image} />
       </Link>
       <div className='flex justify-between px-2 py-1 text-white text-sm'>
