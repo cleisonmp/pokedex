@@ -149,7 +149,7 @@ export const DetailedCard = ({
           )}
         </div>
 
-        {resistancesActive && (
+        {resistancesActive && !!damageRelationsData?.resistances?.length && (
           <div className='grid grid-cols-fit56 gap-1 text-xs md:text-sm md:gap-2'>
             {damageRelationsData ? (
               damageRelationsData.resistances.map((resistance) => (
@@ -164,7 +164,7 @@ export const DetailedCard = ({
             )}
           </div>
         )}
-        {weaknessesActive && (
+        {weaknessesActive && !!damageRelationsData?.weaknesses?.length && (
           <div className='grid grid-cols-fit56 gap-1 text-xs md:text-sm md:gap-2'>
             {damageRelationsData ? (
               damageRelationsData.weaknesses.map((weakness) => (

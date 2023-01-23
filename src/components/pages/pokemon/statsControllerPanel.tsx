@@ -16,7 +16,7 @@ export const StatsControllerPanel = () => {
   } = useStatsPanelStore()
 
   return (
-    <div className='grid grid-cols-1 gap-1 text-xs md:text-sm font-bold md:gap-2'>
+    <div className='grid grid-cols-1 gap-[0.375rem] text-xs md:text-sm font-bold md:gap-2'>
       <StatToggleButton isActive={typeActive} text='Type' statId='TYPE' />
       <StatToggleButton
         isActive={categoryActive}
