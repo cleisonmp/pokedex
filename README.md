@@ -1,8 +1,16 @@
 # Pokédex App
 
-<div>
-  <img margin="10px" height="320" src="https://raw.githubusercontent.com/cleisonmp/pokedex/main/public/readme/home.png" alt="">
-  <img margin="10px" height="320" src="https://raw.githubusercontent.com/cleisonmp/pokedex/main/public/readme/detail.png" alt="">
+<div align="center">
+    <table>
+        <tr>
+            <td style="padding:10px">
+              <img height="320" src="https://raw.githubusercontent.com/cleisonmp/pokedex/main/public/readme/home.png" alt=""  />                
+            </td>
+            <td style="padding:10px">
+                <img height="320" src="https://raw.githubusercontent.com/cleisonmp/pokedex/main/public/readme/detail.png" alt="" />
+            </td>
+        </tr>
+    </table>
 </div>
 
 # :eye_speech_bubble: Live demo
