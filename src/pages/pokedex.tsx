@@ -1,9 +1,9 @@
 import { type NextPage } from 'next'
+import dynamic from 'next/dynamic'
 
 import { usePokedexStore } from '../lib/stores/pokedex'
 
 import { Header } from '../components/common/header'
-import { PokemonList } from '../components/common/pokemonList'
 import { Modal } from '../components/common/modal'
 import type { FormEventHandler } from 'react'
 import { useRef } from 'react'
@@ -11,6 +11,16 @@ import { toTitleCase } from '../lib/utils/toTitleCase'
 import { useAtom } from 'jotai'
 import { pokemonToEditState, editModalState } from '../lib/atoms/editModal'
 import { Button } from '../components/common/button'
+
+const PokemonList = dynamic(
+  () =>
+    import('../components/common/pokemonList/').then(
+      (component) => component.PokemonList,
+    ),
+  {
+    ssr: false,
+  },
+)
 
 const Pokedex: NextPage = () => {
   const { pokemons, update } = usePokedexStore()

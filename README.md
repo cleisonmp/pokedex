@@ -1,6 +1,5 @@
 # TODO
 
-- [ ] Persist pokedex store
 - [ ] Remove from panel stats that are empty
 
 # Create T3 App

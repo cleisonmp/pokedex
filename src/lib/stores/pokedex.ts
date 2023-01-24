@@ -1,4 +1,5 @@
 import { create } from 'zustand'
+import { persist } from 'zustand/middleware'
 import type { DetailedPokemon } from '../../@types/pokemon'
 
 type PokedexState = {
@@ -8,26 +9,35 @@ type PokedexState = {
   update: (id: number, newName: string) => void
 }
 
-export const usePokedexStore = create<PokedexState>()((set, get) => ({
-  pokemons: [],
-  add: (pokemon) =>
-    set((state) => ({
-      pokemons: [...state.pokemons, pokemon].sort((a, b) => a.id - b.id),
-    })),
-  remove: (id) =>
-    set((state) => ({
-      pokemons: state.pokemons.filter((pokemon) => pokemon.id !== id),
-    })),
-  update: (id, newName) => {
-    const pokemonToEdit = get().pokemons.find((pokemon) => pokemon.id === id)
+export const usePokedexStore = create<PokedexState>()(
+  persist(
+    (set, get) => ({
+      pokemons: [],
+      add: (pokemon) =>
+        set((state) => ({
+          pokemons: [...state.pokemons, pokemon].sort((a, b) => a.id - b.id),
+        })),
+      remove: (id) =>
+        set((state) => ({
+          pokemons: state.pokemons.filter((pokemon) => pokemon.id !== id),
+        })),
+      update: (id, newName) => {
+        const pokemonToEdit = get().pokemons.find(
+          (pokemon) => pokemon.id === id,
+        )
 
-    if (pokemonToEdit) {
-      const updatedPokemon: DetailedPokemon = {
-        ...pokemonToEdit,
-        name: newName,
-      }
-      get().remove(id)
-      get().add(updatedPokemon)
-    }
-  },
-}))
+        if (pokemonToEdit) {
+          const updatedPokemon: DetailedPokemon = {
+            ...pokemonToEdit,
+            name: newName,
+          }
+          get().remove(id)
+          get().add(updatedPokemon)
+        }
+      },
+    }),
+    {
+      name: `pokedex-storage`,
+    },
+  ),
+)
