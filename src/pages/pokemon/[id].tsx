@@ -85,7 +85,7 @@ const PokemonPage: NextPage<
 
     setTimeout(() => {
       const randomNumber = Math.random()
-      const catchedPokemon = randomNumber >= normalizedDifficultyLevel
+      const caughtPokemon = randomNumber >= normalizedDifficultyLevel
 
       const toastProps: ToastOptions = {
         position: 'bottom-center',
@@ -99,7 +99,7 @@ const PokemonPage: NextPage<
       }
 
       toast.dismiss() //clear prev toasts to avoid stacking
-      if (catchedPokemon) {
+      if (caughtPokemon) {
         pokedex.add(pokemonData)
         toast.success('🎯 Nice catch!', toastProps)
       } else {
