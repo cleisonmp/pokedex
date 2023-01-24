@@ -1,16 +1,20 @@
-# TODO
+# Pokédex App
 
-- [ ] Remove from panel stats that are empty
+<div>
+  <img margin="10px" height="320" src="https://raw.githubusercontent.com/cleisonmp/pokedex/main/public/readme/home.png" alt="">
+  <img margin="10px" height="320" src="https://raw.githubusercontent.com/cleisonmp/pokedex/main/public/readme/detail.png" alt="">
+</div>
 
-# Create T3 App
+# :eye_speech_bubble: Live demo
 
-This is a [T3 Stack](https://create.t3.gg/) project bootstrapped with `create-t3-app`.
+Check live demonstration [here](https://px-pokedex.vercel.app/)
 
-## Learn More
+## 🧪 Built With
 
-To learn more about the [T3 Stack](https://create.t3.gg/), take a look at the following resources:
-
-- [Documentation](https://create.t3.gg/)
-- [Learn the T3 Stack](https://create.t3.gg/en/faq#what-learning-resources-are-currently-available) — Check out these awesome tutorials
-
-You can check out the [create-t3-app GitHub repository](https://github.com/t3-oss/create-t3-app) — your feedback and contributions are welcome!
+- [T3 Stack](https://create.t3.gg/)
+- [Zustand](https://github.com/pmndrs/zustand)
+- [Jotai](https://jotai.org/)
+- [Headlessui](https://headlessui.com/)
+- [Toastify](https://fkhadra.github.io/react-toastify/introduction)
+- [Tanstack Query](https://tanstack.com/query/latest)
+- [Axios](https://axios-http.com/)
