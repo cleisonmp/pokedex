@@ -7,7 +7,7 @@ type ModalProps = {
   title: string
   isOpen: boolean
   withBackground?: boolean
-  setIsOpen: Dispatch<SetStateAction<boolean>>
+  setIsOpen?: Dispatch<SetStateAction<boolean>>
   children: ReactNode
 }
 export const Modal = ({
@@ -18,7 +18,7 @@ export const Modal = ({
   children,
 }: ModalProps) => {
   const closeModal = () => {
-    setIsOpen(false)
+    setIsOpen?.(false)
   }
 
   return (

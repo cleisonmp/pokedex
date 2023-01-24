@@ -115,12 +115,7 @@ const PokemonPage: NextPage<
 
   return (
     <>
-      <Modal
-        title=''
-        isOpen={showPokeball}
-        setIsOpen={setShowPokeball}
-        withBackground={false}
-      >
+      <Modal title='' isOpen={showPokeball} withBackground={false}>
         <Transition
           show={showPokeball}
           enter='transform transition duration-300 ease-in-out'
